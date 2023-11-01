@@ -1,0 +1,12 @@
+<span 
+    x-data="{ tooltip: false }" 
+    x-on:mouseover="tooltip = true" 
+    x-on:mouseleave="tooltip = false"
+    class="ml-2 h-1 w-5 cursor-pointer">
+        <svg class="w-8 -mt-4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0,0,256,256" fill-rule="nonzero"><script xmlns=""/><defs><linearGradient x1="9.858" y1="9.858" x2="38.142" y2="38.142" gradientUnits="userSpaceOnUse" id="color-1"><stop offset="0" stop-color="#fcc419"/><stop offset="1" stop-color="#828108"/></linearGradient></defs><g fill="#dddddd" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,256v-256h256v256z" id="bgRectangle"/></g><g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.33333,5.33333)"><path d="M44,24c0,11.045 -8.955,20 -20,20c-11.045,0 -20,-8.955 -20,-20c0,-11.045 8.955,-20 20,-20c11.045,0 20,8.955 20,20z" fill="url(#color-1)"/><path d="M32.172,16.172l-10.172,10.172l-5.172,-5.172c-0.781,-0.781 -2.047,-0.781 -2.828,0l-1.414,1.414c-0.781,0.781 -0.781,2.047 0,2.828l8,8c0.781,0.781 2.047,0.781 2.828,0l13,-13c0.781,-0.781 0.781,-2.047 0,-2.828l-1.414,-1.414c-0.781,-0.781 -2.047,-0.781 -2.828,0z" fill="#000000" opacity="0.05"/><path d="M20.939,33.061l-8,-8c-0.586,-0.586 -0.586,-1.536 0,-2.121l1.414,-1.414c0.586,-0.586 1.536,-0.586 2.121,0l5.526,5.525l10.525,-10.525c0.586,-0.586 1.536,-0.586 2.121,0l1.414,1.414c0.586,0.586 0.586,1.536 0,2.121l-13,13c-0.585,0.585 -1.535,0.585 -2.121,0z" fill="#000000" opacity="0.07"/><path d="M21.293,32.707l-8,-8c-0.391,-0.391 -0.391,-1.024 0,-1.414l1.414,-1.414c0.391,-0.391 1.024,-0.391 1.414,0l5.879,5.879l10.879,-10.879c0.391,-0.391 1.024,-0.391 1.414,0l1.414,1.414c0.391,0.391 0.391,1.024 0,1.414l-13,13c-0.39,0.391 -1.024,0.391 -1.414,0z" fill="#ffffff"/></g></g><script xmlns=""/></svg>
+
+    <div x-show="tooltip" 
+    class="text-sm text-white relative mr-1 bg-blue-400 rounded-lg p-1 transform -translate-x-1" >
+    {{$slot}}
+    </div>
+</span>

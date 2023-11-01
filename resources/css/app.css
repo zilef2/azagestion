@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* slider yes or no for necesita transporte */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 90px;
+    height: 40px;
+  }
+  
+  input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 40px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  input[type="checkbox"]:checked + .slider {
+    transform: translateX(20px);
+    border-color: #6366f1;
+  }
+  
+  .yes {
+    position: absolute;
+    left: 10px;
+    color: #fff;
+    background-color: #000000;
+    padding: 6px 12px;
+    border-radius: 40px;
+  }
+  
+  .no {
+    position: absolute;
+    right: 10px;
+    color: #6366f1;
+    background-color: #fff;
+    padding: 6px 12px;
+    border-radius: 40px;
+  }
+  
+  input[type="checkbox"]:checked + .slider .yes {
+    transform: translateX(10px);
+    background-color: #fff;
+    color: #6366f1;
+  }
+  
+  input[type="checkbox"]:checked + .slider .no {
+    transform: translateX(0);
+    background-color: #6366f1;
+    color: #fff;
+  }
+  

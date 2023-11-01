@@ -1,0 +1,95 @@
+{
+    "today": "Hoy",
+    "Today": "Hoy",
+    "E-Mail Address": "Correo electrónico",
+    "Password": "Contraseña",
+    "Remember Me": "Recuérdame",
+    "Login": "Acceder",
+    "Forgot Your Password?": "¿Olvidaste tu contraseña?",
+    "Forgot Your Password": "¿Olvidaste tu contraseña?",
+    "Forgot your password": "¿Olvidaste tu contraseña?",
+    "Email Password Reset Link": "Enviar link de recuperación",
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Olvido su contraseña? no hay problema. Escriba su correo electronico y le enviaremos un link de recuperación.",
+    "Register": "Registro",
+    "Name": "Nombre",
+    "FILTER ACTIVE": "Filtro activo",
+    "Filter active": "Filtro activo",
+    "Reset": "Reiniciar",
+    "Confirm Password": "Confirmar contraseña",
+    "Reset Password": "Restablecer contraseña",
+    "Reset Password Notification": "Aviso para restablecer contraseña",
+    "You are receiving this email because we received a password reset request for your account.": "Estás recibiendo este email porque se ha solicitado un cambio de contraseña para tu cuenta.",
+    "This password reset link will expire in :count minutes.": "Este enlace para restablecer la contraseña caduca en :count minutos.",
+    "If you did not request a password reset, no further action is required.": "Si no has solicitado un cambio de contraseña, puedes ignorar o eliminar este e-mail.",
+    "Please confirm your password before continuing.": "Por favor confirme su contraseña antes de continuar.",
+    "Regards": "Saludos",
+    "Whoops!": "¡Ups!",
+    "Hello!": "¡Hola!",
+    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser: [:actionURL](:actionURL)": "Si tienes problemas haciendo click en el botón \":actionText\", copia y pega el siguiente\nenlace en tu navegador: [:actionURL](:actionURL)",
+    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser: [:displayableActionUrl](:actionURL)": "Si tienes problemas haciendo click en el botón \":actionText\", copia y pega el siguiente\nenlace en tu navegador: [:displayableActionUrl](:actionURL)",
+    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Si tienes problemas haciendo click en el botón \":actionText\", copia y pega el siguiente\nenlace en tu navegador:",
+    
+    "-------------------****--------------------seccion perfil, laravel por defecto": "seccion perfil, laravel por defecto",
+    "Log in": "Iniciar sesion",
+    
+    "Send Password Reset Link": "Enviar enlace para restablecer contraseña",
+    "Logout": "Cerrar sesión",
+    "Verify Email Address": "Confirmar correo electrónico",
+    "Please click the button below to verify your email address.": "Por favor pulsa el siguiente botón para confirmar tu correo electrónico.",
+    "If you did not create an account, no further action is required.": "Si no has creado ninguna cuenta, puedes ignorar o eliminar este e-mail.",
+    "Verify Your Email Address": "Confirma tu correo electrónico",
+    "A fresh verification link has been sent to your email address.": "Se ha enviado un nuevo enlace de verificación a tu correo electrónico.",
+    "Before proceeding, please check your email for a verification link.": "Antes de poder continuar, por favor, confirma tu correo electrónico con el enlace que te hemos enviado.",
+    "If you did not receive the email": "Si no has recibido el email",
+    "click here to request another": "pulsa aquí para que te enviemos otro",
+    "Show / Hide Columns": "Visualizar mas columnas",
+    "There's Nothing to show at the moment": "No hay registros",
+    "Results": "Resultados",
+
+
+
+
+
+    "-------------------****--------------------actualizar contra Y login": "actualizar contra Y login",
+    "Whoops! Something went wrong.": "Hay un error en el acceso a la cuenta",
+    "The provided password does not match your current password.": "La contraseña actual es incorrecta",
+    "The password must be at least 8 characters.": "La nueva contraseña debe tener almenos 8 caracteres",
+    "password": "La nueva contraseña debe tener almenos 8 caracteres",
+    "The :attribute must be at least :min characters.": "La :attribute debe tener almenos :min caracteres",
+    "The password must be": "La nueva contraseña debe tener",
+    "current password": "Contraseña actual",
+    "Saved": "Guardado",
+    "Saved.": "Guardado",
+
+    "min.array": "The :attribute must have at least :min items.",
+    "min.file": "The :attribute must be at least :min kilobytes.",
+    "min.numeric": "The :attribute must be at least :min.",
+    "password.min.string": "qwe :attribute must be at least :min characters.",
+    "password.min": "qwe :attribute must be at least :min characters.",
+
+
+
+
+    "-------------------****--------------------perfil": "perfil",
+
+    "Profile": "Perfil",
+    "Log Out": "Cerrar sesión",
+    "Manage Account": "Administración de cuenta",
+    "Profile Information": "Informacion de perfil",
+    "Update your account's profile information and email address.": "Actualiza tu informacion de perfil y correo",
+    "Update Password": "Actualiza tu contraseña",
+    "Ensure your account is using a long, random password to stay secure.": "Asegúrate de que tu cuenta utiliza una contraseña larga y aleatoria para mantener la seguridad, que en la mayoría de los casos es bastante importante.",
+    "New Password": "Nueva contraseña",
+    "Current Password": "Actual contraseña",
+    "Save": "Guardar",
+    
+    "-------------------****--------------------middleware": "middleware",
+    "You have not admin access": "Usted NO tiene acceso",
+    "-------------------****--------------------excel": "excel",
+    "PDOException: SQLSTATE[22007]:": "Error del archivo",
+    "PDOException: SQLSTATE[22007]: Invalid datetime format:": "Error del archivo",
+
+    "Dashboard": "Tablero principal",
+
+    "All rights reserved.":  "Todos los derechos reservados."
+}
