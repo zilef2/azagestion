@@ -22,7 +22,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 
 
 class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalculatedFormulas
-//,SkipsEmptyRows,WithValidation, WithHeadingRow,  SkipsOnError, SkipsOnFailure 
+//,SkipsEmptyRows,WithValidation, WithHeadingRow,  SkipsOnError, SkipsOnFailure
 {
      use Importable;
     // ,SkipsErrors, SkipsFailures
@@ -96,7 +96,7 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
 
         //busca la orden de compra por codigo
         $OrdenCompraPorCodigo = OrdenCompra::Where('codigo',$row[0])->get();
-        if ( $row[20] == "EJECUTADA" || $row[20] == "ejecutada" || $row[20] == "Ejecutada"){
+        if ( ($row[20] === "EJECUTADA" || $row[20] === "ejecutada" || $row[20] === "Ejecutada") && $row[18] <= 0){
             if (($OrdenCompraPorCodigo->count() != 0)) {
                 $orden = $OrdenCompraPorCodigo->first();
                 $orden->update([
@@ -118,11 +118,11 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                 U 20 estado de la tarea
             ]
         */
-        
+
         //editor-fold "empresa-tarea-clasificacion"
             $empresaPorNombre = Empresa::Where('nombre','LIKE','%'.$row[6].'%')->get();
             $empresaid = 0;
-            
+
             if (($empresaPorNombre->count() === 0)) {
                 $empresa = Empresa::Create(['nombre' => $row[6] ]);
                 $empresaid = $empresa->id;
@@ -130,7 +130,7 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                 $empresaid = $empresaPorNombre->first()->id;
                 // $empresa = $empresaPorNombre->first(); //ttodo: corregir historico
             }
-            
+
             $tareaPorNombre = Tarea::Where('nombre','LIKE','%'.$row[7].'%')->get();
             $tareaid = 0;
             if (($tareaPorNombre->count() == 0)) {
@@ -139,7 +139,7 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
             }else{
                 $tareaid = $tareaPorNombre->first()->id;
             }
-            
+
             $ClasificacionPorNombre = Clasificacion::Where('nombre','LIKE','%'.$row[9].'%')->get();
             $Clasificacionid = 0;
             if (($ClasificacionPorNombre->count() == 0)) {
@@ -181,11 +181,11 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                 'estado_tarea' => 0
             ]);
             $ordenid = $orden->id;
-        } 
+        }
 
         // #USUARIOS
         $usuarioSLug = User::where('name_no_spaces', str_replace(' ', '', $row[11]))->get();
-        
+
         // if (count($usuarioPorNombre) == 0 && count($usuarioSLug) == 0) {
         if (count($usuarioSLug) === 0) {
             $numAleatorio = rand(100100,1001001);

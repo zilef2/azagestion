@@ -35,8 +35,8 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
                         <x-jet-nav-link href="{{ route('SubirUsuarios') }}" :active="request()->routeIs('SubirUsuarios')" class="text-white">
                             {{ __('Subir Usuarios') }}
                         </x-jet-nav-link>
-                        @if (Auth::user()->is_admin > 0 && (Auth::user()->name === 'admin' || Auth::user()->name === 'Admin'))
-                            <x-jet-nav-link href="{{ route('todaBD') }}" :active="request()->routeIs('SubirUsuarios')" class="text-white">
+                        @if (Auth::user()->is_admin > 1)
+                            <x-jet-nav-link href="{{ route('todaBD') }}" class="text-white">
                                 {{ __('Export Toda') }}
                             </x-jet-nav-link>
                         @endif
@@ -61,7 +61,7 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
                                     <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-sky-500/75 hover:text-sky-800 focus:outline-none focus:bg-sky-100 active:bg-sky-400/50 transition">
                                         <b>
                                             {{ Auth::user()->name }}
-                                            {{ Auth::user()->is_admin > 0 ? '✅ Admin' : '' }}
+                                            {{ Auth::user()->is_admin > 0 ? '✅' : '' }}
                                             {{ Auth::user()->is_admin > 1 ? '😎 SUPER' : '' }}
                                         </b> <br>
                                         <div wire:offline> ¡No hay coneccion a internet! </div>

@@ -66,6 +66,8 @@
                         <h2 class="title-font text-center items-center font-medium text-2xl text-gray-900">Subir
                             archivo(xlsx)</h2>
                         <form wire:submit.prevent="importarUsuariosPrueba">
+                            @method('POST')
+                            @csrf
                             <div class="relative items-center text-center p-4 hover:bg-sky-200">
                                 <label
                                     for="archivoExcelSubirFor"class="leading-7 mx-auto text-md text-indigo-600 underline">
@@ -127,12 +129,11 @@
 
 
     @if(auth()->user()->is_admin > 0)
-        <div class="p-2 w-full pt-8 mt-8 border-t border-gray-200 text-center" bis_skin_checked="1">
-            <p class="leading-normal my-5">Antes de realizar esta accion escribale a Alejandro Madrid Felizzola al whatsapp
+        <div class="p-2 w-full pt-8 mt-8 border-t border-gray-200 text-center" >
+            <p class="leading-normal my-5">Antes de realizar esta accion escribale a Alejandro Madrid Felizzola </p>
                 <a class="text-indigo-500">3126870183</a>
-            <p class="leading-normal my-5">Recuerde que la informacion borrada no podrá ser recuperada
-            </p>
-            <div class="mx-auto p-2 " bis_skin_checked="1">
+            <p class="leading-normal my-5">Recuerde que la informacion borrada no podrá ser recuperada </p>
+            <div class="mx-auto p-2">
                 <a href="{{ route('eliminarOrdenesCompra') }}"
                     class="w-32 flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                     Eliminar OC/OS

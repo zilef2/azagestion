@@ -18,14 +18,22 @@
                     </div>
                 @endif
             </div>
-            <div class="flex lg:w-2/3 w-full flex-wrap mx-auto px-8">
-                <div class="w-1/2 mx-5 px-2">
+            <div class="grid xs:grid-cols-1 grid-cols-2 w-full flex-wrap mx-auto px-8 gap-12">
+                <div class="w-full mx-12 px-2">
                     <label for="ini" class="leading-7 text-sm text-gray-600">Fecha inicial</label>
-                    <input type="date" wire:model="fechaini" id="ini" name="ini" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                    <input type="date" wire:model="fechaini" id="ini" name="ini"
+                       class="w-full pr-6 bg-gray-100 bg-opacity-50 text-lg border border-gray-300 rounded-lg
+                        outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out
+                        focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-blue-500
+                    ">
                 </div>
-                <div class="w-1/2 mx-5 px-2">
+                <div class="w-full mx-12 px-2">
                     <label for="Fin" class="leading-7 text-sm text-gray-600">Fecha final</label>
-                    <input type="date" wire:model="fechafin" id="Fin" name="Fin" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+                    <input type="date" wire:model="fechafin" id="Fin" name="Fin"
+                       class="w-full pr-6 bg-gray-100 bg-opacity-50 rounded border border-gray-300
+                        text-lg outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out
+                        focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200
+                     ">
                 </div>
             </div>
             <div wire:loading>
@@ -33,8 +41,8 @@
             </div>
             <div wire:loading.remove class="flex my-6">
                 <button type="button" wire:click="DescargarOrdenes"
-                    @if($validate) 
-                        class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg" 
+                    @if($validate)
+                        class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                     @else
                         class="flex mx-auto text-white bg-gray-500 border-0 py-2 px-8 text-lg cursor-not-allowed"
                     @endif

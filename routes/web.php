@@ -12,7 +12,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
     // Vistas welcome
         //asignador
         Route::get('WelcomeAsignador', '\App\Http\Livewire\Vistas\WelcomeAsignador')->name('WelcomeAsignador')->middleware(['auth', 'revisor']);
-        Route::get('SubirOrdenesDeCompra', '\App\Http\Livewire\Vistas\SubirOrdenesDeCompra')->name('SubirOrdenesDeCompra')->middleware(['auth', 'revisor']);
+        Route::any('SubirOrdenesDeCompra', '\App\Http\Livewire\Vistas\SubirOrdenesDeCompra')->name('SubirOrdenesDeCompra')->middleware(['auth', 'revisor']);
         Route::get('SubirUsuarios', '\App\Http\Livewire\Vistas\SubirUsuarios')->name('SubirUsuarios')->middleware(['auth', 'revisor']);
         Route::get('TodasLasOrdenes', '\App\Http\Livewire\Vistas\TodasLasOrdenes')->name('TodasLasOrdenes')->middleware(['auth', 'admin']);
         Route::get('CambioRoles', '\App\Http\Livewire\FormularioSuper\CambioRoles')->name('CambioRoles')->middleware(['auth', 'revisor']);
@@ -23,7 +23,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         Route::get('OrdenesNuevas', '\App\Http\Livewire\Vistas\OrdenesNuevas')->name('OrdenesNuevas');
         Route::get('OrdenesPorcorrejir', '\App\Http\Livewire\Vistas\OrdenesPorcorrejir')->name('OrdenesPorcorrejir');
     // fin Vistas welcome
-// 300-mod_evasive.conf disabled -- develmod_evasive
+    // 300-mod_evasive.conf disabled -- develmod_evasive
         Route::get('ordenesRechazadas', '\App\Http\Livewire\OrdenesRechazadas')->name('ordenesRechazadas')->middleware(['auth', 'revisor']);
 
         // Route::post('FormNuevaOrden', '\App\Http\Livewire\FormNuevaOrden');
@@ -51,7 +51,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         //exportPDF (version original, y de pruebas)
         Route::get('RangoOrdenesCompra', '\App\Http\Livewire\ExportPdf\RangoOrdenesCompra')->name('RangoOrdenesCompra')->middleware(['auth', 'revisor']);
         
-        //// Route::get('RangoOrdenesCompra', function(){
+        // Route::get('RangoOrdenesCompra', function(){
         //     $fecha1 = Carbon::createFromTimestamp(strtotime('04/01/2023')); $fecha2 = Carbon::createFromTimestamp(strtotime('04/30/2023')); $unafecha =  'abril';
         //     $repor = Reporte::WhereBetween('fecha_reporte',[$fecha1,$fecha2]);
         //     return view('exports.excelReporte',[ 'reportes' => $reportes, 'total0' => $totalHoras, 'fecha' => $unafecha ]);
@@ -82,10 +82,6 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
 
 
 // <editor-fold desc="Artisan">
-    Route::get('/exception',function(){
-        throw new Exception('Probando excepciones y enrutamiento. La prueba ha concluido exitosamente.');
-    });
-
     Route::get('/foo', function () {
         if (file_exists(public_path('storage'))){
             return 'Ya existe';
@@ -114,5 +110,4 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         echo Artisan::call('queue:work --queue=emails');
         return "Aplicación funcionando";
     });
-
 //</editor-fold>

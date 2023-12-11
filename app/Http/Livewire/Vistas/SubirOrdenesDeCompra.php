@@ -7,15 +7,17 @@ use Livewire\WithFileUploads;
 use App\Imports\OrdenesImport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SubirOrdenesDeCompra extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads,WithPagination;
 
     public $errora = 0,$failures,$ListaErrores; //manejo de errores
     public $archivoExcelSubir,$progress;
     public $nombreArchivo;
+    public $maxAttempts = 200;
 
     public function mount(){
         $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
@@ -51,8 +53,6 @@ class SubirOrdenesDeCompra extends Component
 
             \PhpOffice\PhpSpreadsheet\Settings::setLibXmlLoaderOptions(LIBXML_COMPACT | LIBXML_PARSEHUGE);
             Excel::import($import, $this->archivoExcelSubir);
-
-
             $usuariosNuevos = session('CountNuevosUsuarios',0);
             if($usuariosNuevos == 0){
                 $mensajeUsuariosNuevos = 'Sin usuarios nuevos';

@@ -1,7 +1,7 @@
 <div class="my-style">
     @if ($mensajeError == '')
         <section class="text-gray-600 body-font w-full">
-            <div class="container px-4 py-1 mx-auto w-full xl:w-1/5 lg:w-2/3">
+            <div class="container px-4 py-1 mx-auto w-full">
                 <div class="flex flex-col text-center w-full mb-8">
                     <h1 class="sm:text-3xl text-2xl font-medium title-font my-4 text-gray-900">
                         Tramitar orden de compra
@@ -62,8 +62,8 @@
                                 </div>
                             @endif
 
-                            
-                            <div class="p-2 mt-6 w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3">
+
+                            <div class="p-2 mt-6 w-full xs:w-full sm:w-full">
                                 <div class="relative">
                                     <label for="ordenSeleccionadaid" class="block text-sm font-medium text-gray-700 capitalize">
                                         OC/OS ({{ count($codigosPendientes) }})
@@ -78,8 +78,8 @@
                                                 </option>
                                             @endif
                                             <option wire:key="codigo-{{ $generico->id }}" value="{{ $generico->id }}"
-                                                class="capitalize"> {{ $generico->codigo }} | horasaprobadas:
-                                                {{ $generico->{'horasaprobadas'} }}
+                                                class="capitalize">
+                                                {{ $generico->codigo }} | horasaprobadas: {{ $generico->{'horasaprobadas'} }}
                                             </option>
                                         @empty
                                             <option class="capitalize" value="" selected>No hay registros</option>
@@ -89,8 +89,8 @@
                             </div>
                             {{-- buscador de ordenes --}}
                             <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 mt-1">
-                                <p class="mx-1">Escriba la OC/OS y luego click en la lupa</p> 
-                                <div class="mt-6 relative flex h-12 w-full flex-row-reverse overflow-clip rounded-lg">
+                                <p class="mx-1">Escriba la OC/OS y luego click en la lupa</p>
+                                <div class="mt-6 relative flex h-10 w-full flex-row-reverse overflow-clip rounded-lg">
                                     <input wire:model.defer="ordenBuscada" {{ $ordenSeleccionadaid ? 'disabled' : '' }} wire:keydown.enter="OrdenBuscadaFunc"
                                         onkeydown="return onlyNumbers(event)"
                                         type="text" id="ordenBusca" placeholder="Digite los numeros de la OC/OS"
@@ -106,13 +106,13 @@
                             {{-- la parte de abajo se trae cuando se selecciona una orden --}}
 
                             @if ($ordenSeleccionadaid)
-                                <div class="p-2 w-full xs:w-1/2 xs:w-full sm:w-full md:w-1/2">
+                                <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 mt-4">
                                     <div class="relative">
                                         <label for="empresaid"
                                             class="block text-sm font-medium text-gray-700 capitalize">Empresa</label>
                                         <select disabled aria-label=".form-select-lg example"
                                             wire:model.lazy="empresasid"
-                                            class="form-select form-select-md mt-2 appearance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0
+                                            class="form-select form-select-md mt-4 appearance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0
                                         focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none">
                                             @forelse($empresas as $generico)
                                                 @if ($loop->first)
@@ -154,7 +154,7 @@
                                         <label for="tareaid"
                                             class="block text-sm font-medium text-gray-700 capitalize">tarea</label>
                                         <select disabled
-                                            class="form-select form-select-md mt-2 appearance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label=".form-select-lg example" 
+                                            class="form-select form-select-md mt-2 appearance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label=".form-select-lg example"
                                             wire:model.lazy="tareaid">
                                             @forelse($tareas as $generico)
                                                 <option class="capitalize" value="{{ $generico->id }}">
@@ -166,7 +166,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
 
                                 <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2">
                                     <div class="relative">
@@ -174,7 +174,7 @@
                                             <div class="relative flex h-10 w-full flex-row-reverse overflow-clip rounded-lg">
                                                 <input disabled
                                                 type="date" wire:model="fechaOrden" name="fechaOrden"
-                                                id="fechaOrden" placeholder="" 
+                                                id="fechaOrden" placeholder=""
                                                 class="cursor-not-allowed peer w-full rounded-r-lg border border-gray-400 px-2 text-slate-900 bg-gray-100"
                                                     />
                                                 <label for="fechaOrden"
@@ -193,9 +193,9 @@
                                                     datetime-local
                                                     pero los usuarios podran colocar cualquier fecha para que les paguen
                                                     --}}
-                                                <input 
+                                                <input
                                                 type="date" wire:model="fecha_ejecucion" name="fecha_ejecucion"
-                                                id="fecha_ejecucion" placeholder="fecha ejecucion" 
+                                                id="fecha_ejecucion" placeholder="fecha ejecucion"
                                                 class="peer w-full rounded-r-lg border border-gray-400 px-2 text-slate-900 "
                                                     />
                                                 <label for="fecha_ejecucion"
@@ -243,7 +243,7 @@
                                             </label>
                                             <div class="relative flex h-10 w-full flex-row-reverse overflow-clip rounded-lg">
                                                 <input type="number" min="0" max="900" wire:model.defer="horas" step="0.1"
-                                                    name="horas" id="horas" placeholder="" 
+                                                    name="horas" id="horas" placeholder=""
                                                     class="peer w-full rounded-r-lg border border-slate-400 px-2 text-slate-900 placeholder-slate-400 transition-colors duration-300 focus:border-sky-400 focus:outline-none" />
                                                 <label for="horas"
                                                     class="flex items-center rounded-l-lg border border-slate-400 bg-slate-50 px-2 text-sm text-slate-400 transition-colors duration-300 peer-focus:border-sky-400 peer-focus:bg-sky-400 peer-focus:text-white">

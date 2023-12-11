@@ -15,14 +15,14 @@ class RangoOrdenesSoporte extends Component
 
     public $fechaini,$fechafin;
     public $validate = true,$totalArchivos = 0;
-    
+
 
     public function mount() {
         $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
 
         if(Auth::User()->is_admin > 0) {
             log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-            $this->fechaini="2023-03-09"; 
+            $this->fechaini="2023-03-09";
             $this->fechafin="2023-12-12";
         }else{
             Log::info(' U:'.Auth::user()->name. ' ingreso a la vista ' .$nombreC );
@@ -40,7 +40,7 @@ class RangoOrdenesSoporte extends Component
             }
         }
     }
-    
+
     public function arreglarFechas() {
         $fecha1 = strtotime($this->fechaini);
         $fecha2 = strtotime($this->fechafin);
@@ -66,12 +66,12 @@ class RangoOrdenesSoporte extends Component
                 $zipName = storage_path('app/Soportes_'.$this->arreglarFechas().'.zip');
 
                 $createZip = $zip->open($zipName, ZipArchive::CREATE);
-                
+
                 $reportes = Reporte::whereNotNull('adjunto')
                             ->WhereBetween('fecha_reporte',[$this->fechaini,$this->fechafin])
                             ->WhereIn('aprobado',[2,4])
                             ->orderby('fecha_reporte')->get();
-                            
+
                 if(count($reportes) > 0){
                     if($createZip){
                         $contador=1;
@@ -79,12 +79,12 @@ class RangoOrdenesSoporte extends Component
                             if($value->adjunto){
                                 // $pdfFiles[] = $value->adjunto;
                                 $Ord = OrdenCompra::find($value->orden_compra_id);
-                                
+
                                 $empresaNom = preg_replace('([^A-Za-z0-9 ])', '', $Ord->empresa->nombre);
                                 $tareaNom =   preg_replace('([^A-Za-z0-9 ])', '', $Ord->tare->nombre);
-                                $empresaNom = substr($empresaNom, 0,100);
-                                $tareaNom =   substr($tareaNom, 0,100);
-                                $laFecha = date('Y m d', strtotime($value->fecha_ejecucion));
+                                $empresaNom = substr($empresaNom, 0,30);
+                                $tareaNom =   substr($tareaNom, 0,50);
+                                $laFecha = date('Y m d h:i', strtotime($value->fecha_ejecucion));
                                 $zip->addFromString('OC '.
                                     $Ord->codigo
                                     .' '.$empresaNom
@@ -122,7 +122,7 @@ class RangoOrdenesSoporte extends Component
             }
         }else{
             Log::alert(' U:'.Auth::user()->name. ' intento descargar el zip con una fecha inicial posterior a la fecha final, en la vista ' .$nombreC );
-            
+
             session()->flash('message', 'La fecha inicial tiene que ser inferior a la final.');
         }
     }
