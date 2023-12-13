@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\TablaActions;
 
+use App\helpers\Myhelp;
 use App\Models\Clasificacion;
 use Livewire\Component;
 
@@ -9,7 +10,7 @@ use App\Models\Empresa;
 use App\Models\Municipios;
 use App\Models\OrdenCompra;
 use App\Models\Tarea;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Livewire\WithFileUploads;
 use App\Models\Reporte;
 use Illuminate\Support\Facades\Auth;
@@ -20,46 +21,42 @@ class ActionRechazadosAsesor extends Component
 {
     use WithFileUploads;
 
-    public $reporte,$adjunto, $codigo, $observaciones,$horas,$fechaOrden,$siOno,$siNoMensaje,$fecha_ejecucion; //inputs
-    public $laOC_user,$ordenCorregir;
+    public $reporte, $adjunto, $codigo, $observaciones, $horas, $fechaOrden, $siOno, $siNoMensaje, $fecha_ejecucion; //inputs
+    public $laOC_user, $ordenCorregir;
     //pure models
-    public $losSelect,$codigoid,$codigosPendientes;
-    public $tareas,$empresas,$clasificacions,$municipios;
-    public $tareaid,$empresasid,$clasificacionid,$municipio;
-    public $esCapacitacion,$adjuntoListo,$original_filename,$elPDF; //necesita pdf
+    public $losSelect, $codigoid, $codigosPendientes;
+    public $tareas, $empresas, $clasificacions, $municipios;
+    public $tareaid, $empresasid, $clasificacionid, $municipio;
+    public $esCapacitacion, $adjuntoListo, $original_filename, $elPDF; //necesita pdf
     public $fotoRechazo;
     public $bancohoras;
 
 
 
     //reporte
-    public $MaxHoras,$horasAcumuladas = 0;
+    public $MaxHoras, $horasAcumuladas = 0;
     //mensajes
     public $mensajeRevisor;
 
     //mensajes
-    public $mensajeError ='';
+    public $mensajeError = '';
 
-    public function mount($id){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            log::info('Vista:  ' . $nombreC. '  Usuario -> '.Auth::user()->name );
-        }
-        
+    public function mount($id)
+    {
+        Myhelp::EscribirEnLog($this);
+
         $this->reporte = Reporte::find($id);
         $this->ordenCorregir = OrdenCompra::find($this->reporte->orden_compra_id);
         $this->esCapacitacion = $this->ordenCorregir->clasificacion_id == 2;
-        if($this->reporte->aprobado == 3){ //la orden tiene que ser rechazada
+        if ($this->reporte->aprobado == 3) { //la orden tiene que ser rechazada
             /*
-                aprobado = 0 no se ha diligenciado 
-                aprobado = 1 se dilingencio 
+                aprobado = 0 no se ha diligenciado
+                aprobado = 1 se dilingencio
                 aprobado = 2 se aprobo por el revisor
                 aprobado = 3 rechazo por el revisor
                 aprobado = 4 aprobado por completo
             */
-            $this->horasAcumuladas = Reporte::where('orden_compra_id',$this->ordenCorregir->id)->sum('horas');
+            $this->horasAcumuladas = Reporte::where('orden_compra_id', $this->ordenCorregir->id)->sum('horas');
             $this->MaxHoras = floatval($this->ordenCorregir->{'horasaprobadas'} - $this->horasAcumuladas);
 
             $this->empresas = Empresa::all();
@@ -82,25 +79,25 @@ class ActionRechazadosAsesor extends Component
             $this->bancohoras = $this->reporte->{'bancohoras'};
             // $this->adjuntoListo = isset($this->reporte->adjunto) ? $this->reporte->adjunto : null;
             $this->adjuntoListo = $this->reporte->adjunto ?? null;
-            
-            if($this->adjuntoListo) {
-                $this->original_filename = $this->reporte->getPDF();
-                $this->elPDF = 'public/filesOrdenesCompra/'.$this->reporte->adjunto;
 
+            if ($this->adjuntoListo) {
+                $this->original_filename = $this->reporte->getPDF();
+                $this->elPDF = 'public/filesOrdenesCompra/' . $this->reporte->adjunto;
             }
-            if($this->reporte->photo) {
+            if ($this->reporte->photo) {
                 $this->fotoRechazo = $this->reporte->getPhoto();
             }
 
-            $horasAcumuladas = Reporte::where('orden_compra_id',$this->ordenCorregir->id)->sum('horas');
-            
+            $horasAcumuladas = Reporte::where('orden_compra_id', $this->ordenCorregir->id)->sum('horas');
+
             $this->MaxHoras = floatval($this->ordenCorregir->{'horasaprobadas'} - ($horasAcumuladas - $this->horas));
-        }else{
-            $this->mensajeError= 'La orden ya fue corregida';
+        } else {
+            $this->mensajeError = 'La orden ya fue corregida';
         }
     }
 
-    public function updatedAdjunto() {
+    public function updatedAdjunto()
+    {
         if ($this->adjunto) {
             $this->validate([
                 'adjunto' => 'file|mimes:pdf' //8MB
@@ -108,9 +105,10 @@ class ActionRechazadosAsesor extends Component
         }
     }
 
-    public function updated($propertyName) {
+    public function updated($propertyName)
+    {
         $this->validateOnly($propertyName, [
-            'horas' => 'numeric|max:'.$this->MaxHoras,
+            'horas' => 'numeric|max:' . $this->MaxHoras,
             'fecha_ejecucion' => 'date|before_or_equal:today',
         ]);
     }
@@ -122,39 +120,45 @@ class ActionRechazadosAsesor extends Component
         'fecha_ejecucion' => 'date|before_or_equal:today',
     ];
 
-    public function justBack() { return redirect()->to('dashboard'); }
+    public function justBack()
+    {
+        return redirect()->to('dashboard');
+    }
 
-    public function calcularHorasDisponibles(){
-        $otrosReportes = Reporte::where('orden_compra_id',$this->ordenCorregir->id)->whereNot('id',$this->reporte->id);
-        if(count($otrosReportes->get()) > 0){
+    public function calcularHorasDisponibles()
+    {
+        $otrosReportes = Reporte::where('orden_compra_id', $this->ordenCorregir->id)->whereNot('id', $this->reporte->id);
+        if (count($otrosReportes->get()) > 0) {
             $horasAcumuladas = $otrosReportes->sum('horas');
-        }else{
+        } else {
             $horasAcumuladas = 0;
         }
         return floatval($this->ordenCorregir->horasaprobadas) - (floatval($horasAcumuladas) + floatval($this->horas));
     }
 
 
-    public function submitAsesor() {
-        if(!$this->adjuntoListo) {
+    public function submitAsesor()
+    {
+        if (!$this->adjuntoListo) {
             $this->validate();
         }
         $this->validate([
-            'horas' => 'required|numeric|max:'.$this->MaxHoras,
+            'horas' => 'required|numeric|max:' . $this->MaxHoras,
             'fecha_ejecucion' => 'date|before_or_equal:today',
         ]);
-        try{
-            $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
+        try {
+            $ListaControladoresYnombreClase = (explode('\\', get_class($this)));
+            $nombreC = end($ListaControladoresYnombreClase);
 
             $horasdisponibles = $this->calcularHorasDisponibles();
             $this->ordenCorregir->update([
                 'horasdisponibles' => $horasdisponibles
             ]);
 
-            if ($this->esCapacitacion) {// con adjunto
+            if ($this->esCapacitacion) { // con adjunto
                 if ($this->adjunto) {
                     $this->reporte->update([
-                        'adjunto'=> $this->adjunto->store('filesOrdenesCompra', 'public'),
+                        'adjunto' => $this->adjunto->store('filesOrdenesCompra', 'public'),
                         'observaciones' => $this->observaciones,
                         'horas' => $this->horas,
                         'requiere_transporte' => $this->siOno,
@@ -162,10 +166,10 @@ class ActionRechazadosAsesor extends Component
                         'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                     ]);
                     session()->flash('message', 'Orden y Archivo guardados correctamente.');
-                    Log::info('En la vista ' . $nombreC . ' El U: '.Auth::user()->name. ' diligenció la orden '.$this->reporte->id.' y actualizao su adjunto');
+                    Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' diligenció la orden ' . $this->reporte->id . ' y actualizao su adjunto');
 
                     return redirect()->to('dashboard');
-                }else{
+                } else {
                     $this->reporte->update([
                         'fecha_ejecucion' => $this->fecha_ejecucion,
                         'observaciones' => $this->observaciones,
@@ -174,11 +178,11 @@ class ActionRechazadosAsesor extends Component
                         'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                     ]);
                     session()->flash('message', 'Orden guardada correctamente.');
-                    Log::info('En la vista ' . $nombreC . ' El U: '.Auth::user()->name. ' diligenció la orden '.$this->reporte->id.' y no actualizó adjunto');
+                    Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' diligenció la orden ' . $this->reporte->id . ' y no actualizó adjunto');
 
                     return redirect()->to('dashboard');
                 }
-            } else {// sin adjunto
+            } else { // sin adjunto
                 $this->reporte->update([
                     'fecha_ejecucion' => $this->fecha_ejecucion,
                     'observaciones' => $this->observaciones,
@@ -187,18 +191,19 @@ class ActionRechazadosAsesor extends Component
                     'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                 ]);
                 session()->flash('message', 'Orden guardada correctamente.');
-                    Log::info('En la vista ' . $nombreC . ' El U: '.Auth::user()->name. ' actualizo la orden '.$this->reporte->id.' que no era capacitacion (SIN adjunto)');
+                Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' actualizo la orden ' . $this->reporte->id . ' que no era capacitacion (SIN adjunto)');
 
                 return redirect()->to('dashboard');
             }
         } catch (\Throwable $th) {
             session()->flash('messageError', 'Orden de compra no guardada, error inesperado');
 
-            Log::critical('Vista:' . $nombreC . ' El U: '.Auth::user()->name. '.Error: '.$th->getMessage() . '_____ERROR COMPLETO____'.$th);
+            Log::critical('Vista:' . $nombreC . ' El U: ' . Auth::user()->name . '.Error: ' . $th->getMessage() . '_____ERROR COMPLETO____' . $th);
         }
     }
 
-    public function render() {
+    public function render()
+    {
         $this->codigosPendientes = OrdenCompra::all();
         return view('livewire.tabla-actions.action-rechazados-asesor');
     }

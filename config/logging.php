@@ -70,7 +70,21 @@ return [
             'path' => storage_path('logs/adminLaravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
         ],
-
+        'getnotsupport' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/getnotsupportLaravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+        'asesores' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/asesoresLaravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+        'asignadores' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/asignadoresLaravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
 
 
         'daily' => [

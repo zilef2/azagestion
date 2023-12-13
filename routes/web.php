@@ -13,6 +13,9 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         //asignador
         Route::get('WelcomeAsignador', '\App\Http\Livewire\Vistas\WelcomeAsignador')->name('WelcomeAsignador')->middleware(['auth', 'revisor']);
         Route::any('SubirOrdenesDeCompra', '\App\Http\Livewire\Vistas\SubirOrdenesDeCompra')->name('SubirOrdenesDeCompra')->middleware(['auth', 'revisor']);
+        Route::any('SubirExcelGeneral', '\App\Http\Livewire\Debug\SubirExcelGeneral')->name('SubirExcelGeneral')->middleware(['auth', 'revisor']);
+
+
         Route::get('SubirUsuarios', '\App\Http\Livewire\Vistas\SubirUsuarios')->name('SubirUsuarios')->middleware(['auth', 'revisor']);
         Route::get('TodasLasOrdenes', '\App\Http\Livewire\Vistas\TodasLasOrdenes')->name('TodasLasOrdenes')->middleware(['auth', 'admin']);
         Route::get('CambioRoles', '\App\Http\Livewire\FormularioSuper\CambioRoles')->name('CambioRoles')->middleware(['auth', 'revisor']);
@@ -28,7 +31,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
 
         // Route::post('FormNuevaOrden', '\App\Http\Livewire\FormNuevaOrden');
         Route::get('FormNuevaOrden', '\App\Http\Livewire\FormNuevaOrden')->name('FormNuevaOrden');
-        // Route::match(['get','post'], '\App\Http\Livewire\FormNuevaOrden')->name('FormNuevaOrden'); 
+        // Route::match(['get','post'], '\App\Http\Livewire\FormNuevaOrden')->name('FormNuevaOrden');
 
         Route::get('cambiarAsignacion', '\App\Http\Livewire\Tablas\CambiarAsignacion')->name('cambiarAsignacion')->middleware(['auth', 'revisor']);
         Route::get('TablaCambiarAsignacion', '\App\Http\Livewire\Tablas\TablaCambiarAsignacion')->name('TablaCambiarAsignacion')->middleware(['auth', 'revisor']);
@@ -41,7 +44,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         Route::get('tablaRechazadosAceptadosRevisor', '\App\Http\Livewire\Tablas\TablaRechazadosAceptadosRevisor')->name('tablaRechazadosAceptadosRevisor')->middleware(['auth', 'revisor']);
         Route::get('ActionRechazadosAceptadosRevisor/{id}', '\App\Http\Livewire\TablaActions\ActionRechazadosAceptadosRevisor')->name('ActionRechazadosAceptadosRevisor')->middleware(['auth', 'revisor']);
         Route::post('ActionRechazadosAceptadosRevisor/{id}', '\App\Http\Livewire\TablaActions\ActionRechazadosAceptadosRevisor')->middleware(['auth', 'revisor']);
-        
+
         Route::get('TablaRegistrosAceptados', '\App\Http\Livewire\Tablas\TablaRegistrosAceptados')->name('TablaRegistrosAceptados')->middleware(['auth', 'revisor']);
         Route::get('VerAdjunto/{id}', '\App\Http\Livewire\Ultimasvistas\VerAdjunto')->name('VerAdjunto')->middleware(['auth', 'revisor']);
         //asesor
@@ -50,7 +53,7 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
 
         //exportPDF (version original, y de pruebas)
         Route::get('RangoOrdenesCompra', '\App\Http\Livewire\ExportPdf\RangoOrdenesCompra')->name('RangoOrdenesCompra')->middleware(['auth', 'revisor']);
-        
+
         // Route::get('RangoOrdenesCompra', function(){
         //     $fecha1 = Carbon::createFromTimestamp(strtotime('04/01/2023')); $fecha2 = Carbon::createFromTimestamp(strtotime('04/30/2023')); $unafecha =  'abril';
         //     $repor = Reporte::WhereBetween('fecha_reporte',[$fecha1,$fecha2]);
@@ -63,14 +66,14 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         Route::get('Logviez', '\App\Http\Livewire\Ultimasvistas\Logviez')->name('Logviez')->middleware(['auth', 'revisor']);
         Route::get('eliminarOrdenesCompra', '\App\Http\Livewire\Ultimasvistas\EliminarOrdenesCompra')->name('eliminarOrdenesCompra')->middleware(['auth', 'revisor']);
 
-    
+
     //super
         Route::get('NuevTarea', '\App\Http\Livewire\Maestros\NuevTarea')->name('NuevTarea')->middleware(['auth', 'admin']);
         Route::get('NuevClasificacion', '\App\Http\Livewire\Maestros\NuevClasificacion')->name('NuevClasificacion')->middleware(['auth', 'admin']);
         Route::get('NuevEmpresa', '\App\Http\Livewire\Maestros\NuevEmpresa')->name('NuevEmpresa')->middleware(['auth', 'admin']);
         Route::get('NuevRol', '\App\Http\Livewire\Maestros\NuevRol')->name('NuevRol')->middleware(['auth', 'admin']);
         Route::get('NuevasFunciones', '\App\Http\Livewire\Practice\NuevasFunciones')->name('NuevasFunciones')->middleware(['auth', 'admin']);
-        
+
         Route::get('todaBD', function(){
             return (new BDExport())->download('todaLaBaseDeDatos.xlsx');
         })->name('todaBD')->middleware(['auth', 'admin']);

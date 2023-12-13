@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ExportPdf;
 
+use App\helpers\Myhelp;
 use App\Models\OrdenCompra;
 use App\Models\Reporte;
 use Illuminate\Support\Facades\Auth;
@@ -21,11 +22,11 @@ class RangoOrdenesSoporte extends Component
         $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
 
         if(Auth::User()->is_admin > 0) {
-            log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
+            Myhelp::EscribirEnLog($this);
             $this->fechaini="2023-03-09";
             $this->fechafin="2023-12-12";
         }else{
-            Log::info(' U:'.Auth::user()->name. ' ingreso a la vista ' .$nombreC );
+            Myhelp::EscribirEnLog($this);
         }
     }
 
@@ -99,33 +100,31 @@ class RangoOrdenesSoporte extends Component
                         $zip->close();
                         // return response()->download($zipName);
 
-                        Log::info(' U:'.Auth::user()->name. ' descargo el archivo: Soportes_ - ' .$this->arreglarFechas().'.zip en la vista ' .$nombreC );
+                        Myhelp::EscribirEnLog($this);
                         return response()->download($zipName)->deleteFileAfterSend(true);
 
                     }else {
                         session()->flash('messageError', 'Error interno al crear el archivo comprimido');
-                        Log::critical(' U:'.Auth::user()->name. ' intento descargar el zip en la vista ' .$nombreC .' ERROR: no se pudo crear el zip en el servidor');
+                        Myhelp::EscribirEnLog($this,'Error interno al crear el archivo comprimido',2);
                     }
                 }else{
                     session()->flash('messageError', 'Es necesario que exista por lo menos un archivo');
-                    Log::critical(' U:'.Auth::user()->name. ' intento descargar el zip con rango incorrecto, con cero reportes - IMPOSIBLE - en la vista ' .$nombreC );
+                    Myhelp::EscribirEnLog($this,' intento descargar el zip con rango incorrecto, con cero reportes',2);
                 }
-
                 // return response()->download($pdfFiles);
                 // return Storage::disk('public')->download($pdfFiles);
             } catch (\Throwable $th) {
-                Log::critical(' U:'.Auth::user()->name. ' intento descargar el zip en la vista ' .$nombreC .' ERROR: '.$th->getMessage());
-
+                Myhelp::EscribirEnLog($this,'',1,$th);
                 session()->flash('messageError', $th->getMessage());
-                // session()->flash('messageError', substr($th,0,600));
                 // $this->addError('archivoExcelSubir', "Formato invalido");
             }
         }else{
-            Log::alert(' U:'.Auth::user()->name. ' intento descargar el zip con una fecha inicial posterior a la fecha final, en la vista ' .$nombreC );
-
+            Myhelp::EscribirEnLog($this,' intento descargar el zip con una fecha inicial posterior a la fecha final',2);
             session()->flash('message', 'La fecha inicial tiene que ser inferior a la final.');
         }
+        return null;
     }
+
     public function render()
     {
         return view('livewire.export-pdf.rango-ordenes-soporte');

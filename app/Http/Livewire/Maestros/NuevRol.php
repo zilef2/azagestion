@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\Maestros;
+use App\helpers\Myhelp;
 use App\Models\Roles;
 
 use Livewire\Component;
@@ -23,7 +24,7 @@ class NuevRol extends Component
     public $todas;
 
     public function mount(){
-    log::debug('Vista:  ' . get_class($this). '  Usuario -> '.Auth::user()->name );
+        Myhelp::EscribirEnLog($this);
         $this->losAtributos = ( (new Roles)->getFillable() );
         $this->todas = Roles::where('id','>',0)->get();
     }

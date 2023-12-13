@@ -23,11 +23,11 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
                 <div class="text-white hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')" class="text-white">
                         {{ __('Menu Principal') }}
-                        <div wire:offline> ¡No hay coneccion a internet! </div>
+                        <div wire:offline class="text-2xl text-indigo-500"> ¡No hay coneccion a internet! </div>
                     </x-jet-nav-link>
                     @if(Auth::user()->is_admin >= 1 || Auth::user()->getRol() == 'Asignador' || Auth::user()->getRol() == 'Revisor')
                         <x-jet-nav-link href="{{ route('SubirOrdenesDeCompra') }}" :active="request()->routeIs('SubirOrdenesDeCompra')" class="text-white">
-                            {{ __('Subir OC') }}
+                            Ordenes de compra
                         </x-jet-nav-link>
                         <x-jet-nav-link href="{{ route('RechazadosAceptadosRevisor') }}" :active="request()->routeIs('RechazadosAceptadosRevisor')" class="text-white">
                             {{ __('Rechazados') }}
@@ -35,11 +35,10 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
                         <x-jet-nav-link href="{{ route('SubirUsuarios') }}" :active="request()->routeIs('SubirUsuarios')" class="text-white">
                             {{ __('Subir Usuarios') }}
                         </x-jet-nav-link>
-                        @if (Auth::user()->is_admin > 1)
-                            <x-jet-nav-link href="{{ route('todaBD') }}" class="text-white">
-                                {{ __('Export Toda') }}
-                            </x-jet-nav-link>
-                        @endif
+                        <x-jet-nav-link href="{{ route('SubirExcelGeneral') }}" :active="request()->routeIs('SubirExcelGeneral')" class="text-white">
+                            Subir Ordenes
+                        </x-jet-nav-link>
+                       
                     @endif
                 </div>
             </div>
@@ -62,7 +61,7 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
                                         <b>
                                             {{ Auth::user()->name }}
                                             {{ Auth::user()->is_admin > 0 ? '✅' : '' }}
-                                            {{ Auth::user()->is_admin > 1 ? '😎 SUPER' : '' }}
+                                            {{ Auth::user()->is_admin > 1 ? '😎 SUPERADMIN' : '' }}
                                         </b> <br>
                                         <div wire:offline> ¡No hay coneccion a internet! </div>
                                         <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> </svg>
@@ -91,8 +90,13 @@ background: linear-gradient(90deg, rgba(4,160,218,1) 32%, rgba(0,160,223,1) 100%
 
 
                             @if (Auth::user()->is_admin > 0)
-                                <x-jet-dropdown-link href="{{ route('todaBD') }}">
+                                {{-- <x-jet-dropdown-link href="{{ route('todaBD') }}">
                                     {{ __('Exportar la BD') }}
+                                </x-jet-dropdown-link> --}}
+                            @endif
+                            @if (Auth::user()->is_admin > 0)
+                                <x-jet-dropdown-link href="{{ route('eliminarOrdenesCompra') }}">
+                                    Eliminar Ordenes
                                 </x-jet-dropdown-link>
                             @endif
 

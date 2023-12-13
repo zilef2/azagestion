@@ -117,7 +117,6 @@
 
         php artisan make:livewire tutorial.TutorialDash
 
-        
 
         //asesor (usuario ordinario)
         php artisan make:livewire vistas.WelcomeAsesor
@@ -134,6 +133,8 @@
             }
 
 
+    //debugging
+    php artisan make:livewire debug.subirExcelGeneral
     //borrados
     <livewire:tablas.rechazados-asesor />
 

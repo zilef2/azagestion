@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Livewire\Tablas;
 
 use App\Models\OrdenCompra;
 use App\Models\OrdenCompra_User;
 use App\Models\Reporte;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Mediconesystems\LivewireDatatables\BooleanColumn;
@@ -24,7 +25,8 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
 
     public $totalRow;
 
-    public function builder (){
+    public function builder()
+    {
         $this->totalRow = [
             'cantidad' => 1001,
         ];
@@ -32,15 +34,14 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
         $idUser = Auth::user()->id;
         // $OrdenesDelUsuario = OrdenCompra_User::Where('user_id',$idUser)->pluck('orden_compra_id')->unique();
 
-        $aprobados = $this->aceptadas === "0" ? [1] : [2,4];
+        $aprobados = $this->aceptadas === "0" ? [1] : [2, 4];
         $Resultado = Reporte::query()
-            ->Join('orden_compras','orden_compras.id','reportes.orden_compra_id')
-            ->Join('municipios','municipios.id','reportes.municipio_id')
-            ->Join('users','users.id','reportes.user_id')
-            ->WhereIn('aprobado',$aprobados)
-            ->where('reportes.user_id',$idUser)
-            ->where('reportes.created_at','>=',Carbon::now()->addMonth(-4))
-            ;
+            ->Join('orden_compras', 'orden_compras.id', 'reportes.orden_compra_id')
+            ->Join('municipios', 'municipios.id', 'reportes.municipio_id')
+            ->Join('users', 'users.id', 'reportes.user_id')
+            ->WhereIn('aprobado', $aprobados)
+            ->where('reportes.user_id', $idUser)
+            ->where('reportes.created_at', '>=', Carbon::now()->addMonth(-4));
         /*
             aprobado = 0 no se ha diligenciado 
             aprobado = 1 se dilingencio 
@@ -48,44 +49,46 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
             aprobado = 3 rechazo por el revisor
             aprobado = 4 aprobado por completo
          */
-        Return $Resultado;
+        return $Resultado;
     }
 
-    public function columns() {
+    public function columns()
+    {
         $elReturn = [
-                // Column::name('users.name')->label('Nombre')->searchable(),
-                Column::name('orden_compras.codigo')->label('OC/OS'),
+            // Column::name('users.name')->label('Nombre')->searchable(),
+            Column::name('orden_compras.codigo')->label('OC/OS'),
 
-                NumberColumn::name('horas')->label('horas ejecutadas'),
-                NumberColumn::name('aprobadas')->label('horas aprobadas'),
-                NumberColumn::name('orden_compras.horasaprobadas')->label('horas solicitadas'),
-                BooleanColumn::name('reportes.bancohoras')->label('Banco de horas'),                
-                DateColumn::name('fecha_reporte')->label('fecha del reporte'),
-                DateColumn::name('fecha_ejecucion')->label('Ejecucion'),
-                Column::name('observaciones')->label('observaciones'),
-                BooleanColumn::name('requiere_transporte')->label('requiere transporte')->hide(),
-                Column::name('municipios.nombre')->label('municipio')->hide(),
-                BooleanColumn::name('adjunto')->label('adjunto')->hide(),
+            NumberColumn::name('horas')->label('horas ejecutadas'),
+            NumberColumn::name('aprobadas')->label('horas aprobadas'),
+            NumberColumn::name('orden_compras.horasaprobadas')->label('horas solicitadas'),
+            BooleanColumn::name('reportes.bancohoras')->label('Banco de horas'),
+            DateColumn::name('fecha_reporte')->label('fecha del reporte'),
+            DateColumn::name('fecha_ejecucion')->label('Ejecucion'),
+            Column::name('observaciones')->label('observaciones'),
+            BooleanColumn::name('requiere_transporte')->label('requiere transporte')->hide(),
+            Column::name('municipios.nombre')->label('municipio')->hide(),
+            BooleanColumn::name('adjunto')->label('adjunto')->hide(),
 
-                DateColumn::callback(['updated_at'], function ($updated_at) {
-                    return Carbon::createFromDate($updated_at)->diffForHumans(Carbon::now());
-                })->label('Actualizado')->hide()->defaultSort('desc'),
+            DateColumn::callback(['updated_at'], function ($updated_at) {
+                return Carbon::createFromDate($updated_at)->diffForHumans(Carbon::now());
+            })->label('Actualizado')->hide()->defaultSort('desc'),
 
-            ];
-            if($this->aceptadas === "0"){
-                $elReturn[] = DateColumn::callback(['id'], function ($id) {
-                    return " <button wire:click=borrarUs($id)>❌</button> ";
-                })->label('Borrar');
-            }
-            // if (Auth::user()->is_admin>=1) {
-                // $elReturn[]=Column::delete()->label('Eliminar')->hide(); 
-            // }
-            return $elReturn;
+        ];
+        if ($this->aceptadas === "0") {
+            $elReturn[] = DateColumn::callback(['id'], function ($id) {
+                return " <button wire:click=borrarUs($id)>❌</button> ";
+            })->label('Borrar');
+        }
+        // if (Auth::user()->is_admin>=1) {
+        // $elReturn[]=Column::delete()->label('Eliminar')->hide(); 
+        // }
+        return $elReturn;
     }
 
 
-    public function borrarUs($id){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
+    public function borrarUs($id)
+    {
+        $ListaControladoresYnombreClase = (explode('\\', get_class($this)));
         $nombreC = end($ListaControladoresYnombreClase);
 
         $repor = Reporte::find($id);
@@ -95,15 +98,15 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
         //     $nuevasHoras,
         //     floatval($orden->horasdisponibles) , floatval($repor->horas)
         // );
-        if($nuevasHoras <= $orden->horasaprobadas){
+        if ($nuevasHoras <= $orden->horasaprobadas) {
             $orden->update([
                 'horasdisponibles' => $nuevasHoras
             ]);
-            
+
             $repor->delete();
-            Log::info(' U:'.Auth::user()->name. ' se elimino el reporte con id '.$id.', codigo: '. $orden->codigo.' , en la vista ' .$nombreC);
-        }else{
-            Log::critical(' U:'.Auth::user()->name. ' intento eliminar un reporte que iba a quedar con '. $nuevasHoras.'horas disponibles, codigode la orden: '. $orden->codigo. 'en la vista ' .$nombreC);
+            Log::info(' U:' . Auth::user()->name . ' se elimino el reporte con id ' . $id . ', codigo: ' . $orden->codigo . ' , en la vista ' . $nombreC);
+        } else {
+            Log::critical(' U:' . Auth::user()->name . ' intento eliminar un reporte que iba a quedar con ' . $nuevasHoras . 'horas disponibles, codigode la orden: ' . $orden->codigo . 'en la vista ' . $nombreC);
             session()->flash('messageError', 'Error, las horas no concuerdan');
             return redirect(request()->header('Referer'));
         }
@@ -111,19 +114,16 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
 
     public function aceptarReporte($id)
     {
-        $reporte=Reporte::find($id);
+        $reporte = Reporte::find($id);
         // $IntAceptar = $this->estado == 2 ? 4 : 4; 
         $reporte->update([
             'aprobado' => 4
         ]);
 
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
+        $ListaControladoresYnombreClase = (explode('\\', get_class($this)));
         $nombreC = end($ListaControladoresYnombreClase);
-        Log::Critical(' U:'.Auth::user()->name. ' se acepto un reporte desde la vista ' .$nombreC);
+        Log::Critical(' U:' . Auth::user()->name . ' se acepto un reporte desde la vista ' . $nombreC);
 
         return redirect(request()->header('Referer'));
     }
-
 }
-
-

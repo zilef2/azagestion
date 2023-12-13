@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Tablas;
 
+use App\helpers\Myhelp;
 use App\Models\Reporte;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ class CambiarHorasAprobadas extends Component
     public $reporte,$horasAprob;
 
     public function mount($id) { //!not used
-        // log::info('Vista:  ' . get_called_class(). '  Usuario -> '.Auth::user()->name. ' ID del reporte '.$id );
+        Myhelp::EscribirEnLog($this);
         $this->reporte = Reporte::find($id);
         $this->horasAprob = $this->reporte->horasaprobadas;
     }

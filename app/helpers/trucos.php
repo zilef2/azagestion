@@ -28,8 +28,26 @@ n lts
 
         chmod -R o+w /home/aplicativoswebco/public_html/azasegu/storage
         chmod -R o+w /home/aplicativoswebco/public_html/azasegu/public
-        
+
         chmod -R 775 /home/aplicativoswebco/public_html/registron/storage
         chmod -R 775 /home/aplicativoswebco/public_html/registron/public
         chmod -R 775 /home/aplicativoswebco/public_html/registron/bootstrap
         chmod -R 775 /home/aplicativoswebco/public_html/registron/app
+
+
+
+
+
+<!--//Resolving GET not support Llivewire/message-->
+<!--modulos desistalados-->
+mod_deflate
+mod_security
+mod_evasive
+
+mod_cache
+mod_expires
+
+
+<!--EXTENSIONES DE PHP (instaladas)-->
+php81-php-fpm
+php81-php-dbg

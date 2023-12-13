@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Livewire\Vistas;
+
+use App\helpers\Myhelp;
 use Livewire\Component;
 
 use App\Models\OrdenCompra;
@@ -15,14 +17,11 @@ class WelcomeAsesor extends Component
     public $ordenesPendientesWelcome=0;
     public $ordenesRechazadasWelcome=0;
     public $isadmin;
-    
+
     public function mount(){
         $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            Log::info('Vista:  ' . $nombreC. '  Usuario -> '.Auth::user()->name );
-        }
+        $thisuser = Myhelp::AuthU();
+        Myhelp::EscribirEnLog($this);
 
         $userId = Auth::user()->id;
         $this->isadmin = Auth::user()->is_admin;

@@ -2,41 +2,34 @@
 
 namespace App\Http\Livewire\Vistas;
 
+use App\helpers\Myhelp;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Imports\OrdenesImport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 
 class SubirOrdenesDeCompra extends Component
 {
-    use WithFileUploads,WithPagination;
+    use WithFileUploads;
 
     public $errora = 0,$failures,$ListaErrores; //manejo de errores
-    public $archivoExcelSubir,$progress;
+    public $archivoExcelSubir;
     public $nombreArchivo;
-    public $maxAttempts = 200;
+    public $messages = [];
 
     public function mount(){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            log::info('Vista:  ' . $nombreC. '  Usuario -> '.Auth::user()->name );
-        }
-        
-        $this->progress=0;
+        Myhelp::EscribirEnLog($this);
     }
 
     public function updatedArchivoExcelSubir() {
-        $Kilobytes = intval(($this->archivoExcelSubir->getSize())/1024);
+        $Kilobytes = (int)(($this->archivoExcelSubir->getSize())/1024);
         if($Kilobytes > 8192){
             // $this->addError('archivoExcelSubir', 'El Archivo es demasiado pesado.');
             session()->flash('messageError', 'El Archivo es demasiado pesado, debe ser menor a 8MB');
-            $this->reset();
-        };
+            // $this->reset();
+        }
     }
 
     public function importarUsuariosPrueba() {
@@ -47,17 +40,16 @@ class SubirOrdenesDeCompra extends Component
 
         try {
             $import = new OrdenesImport();
-            
+
             // $import->import($this->archivoExcelSubir);
             // $import->queue($this->archivoExcelSubir);
 
-            \PhpOffice\PhpSpreadsheet\Settings::setLibXmlLoaderOptions(LIBXML_COMPACT | LIBXML_PARSEHUGE);
+//            \PhpOffice\PhpSpreadsheet\Settings::setLibXmlLoaderOptions(LIBXML_COMPACT | LIBXML_PARSEHUGE);
             Excel::import($import, $this->archivoExcelSubir);
             $usuariosNuevos = session('CountNuevosUsuarios',0);
             if($usuariosNuevos == 0){
                 $mensajeUsuariosNuevos = 'Sin usuarios nuevos';
-                session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado correctamente. '
-                .$mensajeUsuariosNuevos);
+                // session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado correctamente. ' .$mensajeUsuariosNuevos);
 
                 Log::info(get_called_class(). ' elU:'.Auth::user()->name. ' subio ordenes sin usuarios desconcidos' );
             }else{
@@ -68,12 +60,13 @@ class SubirOrdenesDeCompra extends Component
                 }
 
                 Log::alert(get_called_class(). ' elU:'.Auth::user()->name. ' subio ordenes con '.$usuariosNuevos.' usuarios desconcidos' );
-                session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado.');
-                session()->flash('WarningMessage', $mensajeUsuariosNuevos);
+                // session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado.');
+                // session()->flash('WarningMessage', $mensajeUsuariosNuevos);
             }
             session(['CountNuevosUsuarios' => 0]);
-           
-            $this->reset(); $this->mount();
+
+            $this->reset();
+            // $this->mount();
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             foreach ($e->failures() as $failu) {
                 $this->ListaErrores = $failu->errors();
@@ -84,13 +77,13 @@ class SubirOrdenesDeCompra extends Component
 
             if (config('app.env') === 'production') {
                 if($th->getMessage() != null){
-                    session()->flash('WarningMessage', ' Fila#'.$countfilas.', '.$th->getMessage().'.');
+                    // session()->flash('WarningMessage', ' Fila#'.$countfilas.', '.$th->getMessage().'.');
                 }else{
-                    session()->flash('messageError', ' Fila#'.$countfilas);
+                    // session()->flash('messageError', ' Fila#'.$countfilas);
                 }
             } else {
-                session()->flash('WarningMessage', $th->getMessage());
-                session()->flash('messageError', ' Fila#'.$countfilas. ' --- '.substr($th,0,600));
+                // session()->flash('WarningMessage', $th->getMessage());
+                // session()->flash('messageError', ' Fila#'.$countfilas. ' --- '.substr($th,0,600));
             }
             // $this->reset(); $this->mount();
         }

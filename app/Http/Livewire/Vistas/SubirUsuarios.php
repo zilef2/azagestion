@@ -2,6 +2,7 @@
 namespace App\Http\Livewire\Vistas;
 
 use App\Exports\DesconocidosExport;
+use App\helpers\Myhelp;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Imports\RegistrarUsuariosImport;
@@ -20,38 +21,15 @@ class SubirUsuarios extends Component
     public $archivoExcelSubir;
     public $haydesconocidos, $nombreArchivoRegisterUser ="No hay archivo";
 
-    public function elLog($nombreFuncion, $comentario = '',$tipo = ''){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            if ($comentario === '') {
-                log::info('Vista -> ' . $nombreC . ' U:'.Auth::user()->name . ' Funcion ->'. $nombreFuncion);
-            } else {
-                if($tipo == 'alert') {
-                    log::alert('Vista -> ' . $nombreC . ' U:'.Auth::user()->name . ' Funcion ->'. $nombreFuncion. ' :: '.$comentario);
-                } else {
-                    if($tipo == 'critical') {
-                        log::critical('Vista -> ' . $nombreC . ' U:'.Auth::user()->name . ' Funcion ->'. $nombreFuncion. ' :: '.$comentario);
-                    } else {
-                        log::info('Vista -> ' . $nombreC . ' U:'.Auth::user()->name . ' Funcion ->'. $nombreFuncion. ' :: '.$comentario);
-                    }
-                }
-            }
-        }
-    }
-
     public function mount(){
-        $this->elLog(__FUNCTION__);
-
+        Myhelp::EscribirEnLog($this,__FUNCTION__);
         $this->haydesconocidos = count(User::Where('email','like','%UsuarioDescono%')->get()) > 0;
     }
 
     public function EditarUsdesconocidos(){ return redirect()->to('dashboard'); }
 
     public function updatedArchivoExcelSubir() {
-        $Kilobytes = intval(($this->archivoExcelSubir->getSize())/1024);
+        $Kilobytes = (int)($this->archivoExcelSubir->getSize())/1024;
         if($Kilobytes > 2048){
             session()->flash('messageError', 'El Archivo es demasiado pesado, debe ser menor a 2MB');
             $this->reset();
@@ -61,8 +39,8 @@ class SubirUsuarios extends Component
 
 
     public function exportDes() {
-        $this->elLog(__FUNCTION__, 'Se comenzo el proceso para descargar los usuarios desconocidos','info');
-        
+        Myhelp::EscribirEnLog($this,'Se comenzo el proceso para descargar los usuarios desconocidos');
+
         return Excel::download(new DesconocidosExport, 'Asesores_Desconocidos.xlsx');
     }
 
@@ -70,14 +48,9 @@ class SubirUsuarios extends Component
         $this->validate([
             'archivoExcelSubir' => 'max:2048', // 2MB Max
         ]);
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-
-        set_time_limit(120);//2min
+        set_time_limit(180);//2min
         DB::beginTransaction();
         try {
-            $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-            
             $import = new RegistrarUsuariosImport();
             $import->import($this->archivoExcelSubir);
             $this->ListaErrores = [];
@@ -91,13 +64,10 @@ class SubirUsuarios extends Component
 
             if ($conteo === 0) {
                 DB::commit();
-                $this->elLog(__FUNCTION__, 'subio usuarios sin duplicados','info');
-
-                Log::info($nombreC. ' U:'.Auth::user()->name. ' subio usuarios sin duplicados' );
+                Myhelp::EscribirEnLog($this);
                 session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado correctamente. Refresque la página para visualizar los usuarios nuevos');
             } else {
-
-                Log::alert($nombreC. ' U:'.Auth::user()->name. ' subio usuarios y quedaron '.$conteo.' repetidos' );
+                Myhelp::EscribirEnLog($this,'subio usuarios y quedaron '.$conteo.' repetidos',2);
                 $listaUs = '';
 
                 foreach ($userDuplicates as $value) {
@@ -111,16 +81,13 @@ class SubirUsuarios extends Component
                             ->first();
                         $elBueno = $value;
                     }else{
-                        //value => el deleted  | elbueno => a borrar 
+                        //value => el deleted  | elbueno => a borrar
                         $elBueno = User::where('name_no_spaces',$value->name_no_spaces)
                             ->wherenot('id',$value->id)
                             // ->wherenot('email','like','%'.$value->email.'%')
                             ->first();
                         $usuarioDeleted = $value;
                     }
-
-                    // if( $value->name_no_spaces == 'MACHADOPELAEZSARA')
-                    // dd($elBueno, $usuarioDeleted);
 
                     //!procede a borrar del todo
                     $listaUs .= $elBueno->name . ' cc:' .$elBueno->cedula2 . ' id:'. $usuarioDeleted->id;
@@ -136,7 +103,6 @@ class SubirUsuarios extends Component
                         $temporal = $usuarioDeleted->replicate();
                         $losBuenos[$elBueno->id] = $temporal;
 
-
                         $usuarioDeleted->Delete();
                         // $usuarioDeleted->forceDelete();
                         $elBueno->update([
@@ -151,12 +117,12 @@ class SubirUsuarios extends Component
                         DB::commit();
                     }else{
                         //hay una orden_compra_users que no se "paso" al nuevo usuario
-                        Log::critical($nombreC. ' U-> '.Auth::user()->name. " un usuario desafio el codigo id: ".$usuarioDeleted->id." y las ordenes fueron: ".$listaOrdenes_user->toArray());
+                        Myhelp::EscribirEnLog($this," un usuario desafio el codigo id: ".$usuarioDeleted->id." y las ordenes fueron: ".$listaOrdenes_user->toArray(),2);
                         DB::rollBack();
                         session()->flash('messageError', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado incorrectamente.');
                     }
                 }
-                Log::warning('Fueron eliminados los siguientes usuarios '. $listaUs);
+                Myhelp::EscribirEnLog($this,'Fueron eliminados los siguientes usuarios '. $listaUs);
             }
             DB::commit();
             session()->flash('message', $this->archivoExcelSubir->getClientOriginalName().' se ha cargado correctamente. Refresque la página para visualizar los usuarios nuevos');
@@ -165,14 +131,14 @@ class SubirUsuarios extends Component
             foreach ($e->failures() as $failu) {
                 $this->ListaErrores = $failu->errors();
                 $this->failures = "Ocurrio un error en la fila ".$failu->row();
-                Log::critical($nombreC. ' U-> '.Auth::user()->name. " Ocurrio un error en el archivo de excel (SubirUsuarios), en la fila ".$failu->row());
+                Myhelp::EscribirEnLog($this,'',1);
             }
             DB::rollBack();
 
         } catch (\Throwable $th) {
             $countfilas = session('CountFilas',0);
             $codigoFallo = 0;
-            Log::critical($nombreC. ' U:'.Auth::user()->name. ' subio usuarios incorrectamente. Mensaje error:'. $th->getMessage());
+            Myhelp::EscribirEnLog($this,'',1,$th);
 
             if(session('debug') != null) $codigoFallo = session('debug')->codigo;
 

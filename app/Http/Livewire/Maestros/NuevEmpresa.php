@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Maestros;
 
+use App\helpers\Myhelp;
 use App\Models\Empresa;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class NuevEmpresa extends Component
     public $todas;
 
     public function mount(){
-        log::debug('Vista:  ' . get_class($this). '  Usuario -> '.Auth::user()->name );
+        Myhelp::EscribirEnLog($this);
         $this->losAtributos = ( (new Empresa)->getFillable() );
         $this->todas = Empresa::where('id','>',0)->get();
     }

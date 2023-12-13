@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Ultimasvistas;
 
+use App\helpers\Myhelp;
 use App\Models\Reporte;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ class VerAdjunto extends Component
     public $original_file;
 
     public function mount($id) {
-        log::info('Entro a ver un PDF en la vista ' . get_called_class(). '  Usuario -> '.Auth::user()->name. ' ID del reporte '.$id );
+        Myhelp::EscribirEnLog($this);
         $this->original_file = Reporte::find($id)->getPDF();
     }
     public function render() {

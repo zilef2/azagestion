@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Maestros;
 
+use App\helpers\Myhelp;
 use App\Models\OrdenCompra;
 use Livewire\Component;
 use App\Models\Tarea;
@@ -23,22 +24,22 @@ class NuevTarea extends Component
 
     //# nombre de la
     public $losInputs =[
-        [ 
+        [
             'variable' =>'nombre',
             'variableLegible' => 'Nombre de la Tarea',
             'tipoVariable' => 'text',
         ],
-        [ 
+        [
             'variable' =>'contarSinRepetidos',
             'variableLegible' => 'contarSinRepetidos',
             'tipoVariable' => 'text',
         ],
-        [ 
+        [
             'variable' =>'contarTodos',
             'variableLegible' => 'contarTodos',
             'tipoVariable' => 'text',
         ],
-        [ 
+        [
             'variable' =>'HayRepetidos',
             'variableLegible' => 'HayRepetidos',
             'tipoVariable' => 'text',
@@ -48,7 +49,7 @@ class NuevTarea extends Component
     public $todas;
 
     public function mount(){
-    log::debug('Vista:  ' . get_class($this). '  Usuario -> '.Auth::user()->name );
+        Myhelp::EscribirEnLog($this);
         $this->losAtributos = ( (new Tarea)->getFillable() );
         $this->todas = Tarea::All();
         $this->contarSinRepetidos = OrdenCompra::All()->unique('codigo')->count();

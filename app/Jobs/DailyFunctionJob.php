@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\helpers\Myhelp;
 use App\Mail\OrdenesCompraMail;
 use Illuminate\Bus\Queueable;
 // use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -34,9 +35,7 @@ class DailyFunctionJob implements ShouldQueue
      */
     public function handle()
     {
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
-        Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.' DailyFunctionJob is OK');
-
+        Myhelp::EscribirEnLog($this);
         Mail::to('alejofg2@gmail.com')->send(new OrdenesCompraMail(
             "Funcion diaria correcta",
             "Funcion diaria funcionando correctamente"

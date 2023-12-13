@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\helpers\Myhelp;
 use App\Models\Clasificacion;
 use App\Models\Empresa;
 use App\Models\Municipios;
@@ -39,7 +40,7 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
             return 'Desde el ' . date('j M Y', $fecha1) . ' hasta el ' . date('j M Y  h:i A', $fecha2);
         }
     }
-    
+
     public function styles(Worksheet $sheet) {
         $lastRow = $sheet->getHighestRow();
         // Obtiene el estilo actual de las celdas de la última fila
@@ -65,7 +66,7 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
             ],
         ]);
     }
-    
+
     public function view(): View {
 
         $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
@@ -73,7 +74,7 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
 
         $reportes = Reporte::WhereBetween('fecha_reporte',[$this->ini,$this->fin])
             ->WhereIn('aprobado',[2,4])->get();
-        
+
         $totalHoras = 0;
         try {
             $iduserBorrado = [];
@@ -84,11 +85,11 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
                     $reportes[$key]->UsuarioName = $usuario->name;
                     // $reportes[$key]->UsuarioName = $value->usuario->name;
                     $reportes[$key]->ordenCodigo = $orden->codigo;
-                    
+
                     $reportes[$key]->empresa2 = Empresa::find($orden->empresa_id)->nombre;
                     $reportes[$key]->tarea  = Tarea::find($orden->tarea_id)->nombre;
                     $reportes[$key]->clasif = Clasificacion::find($orden->clasificacion_id)->nombre;
-                    
+
                     $reportes[$key]->munici = Municipios::find($value->municipio_id)->nombre;
                     $reportes[$key]->horasaprobadas = $orden->horasaprobadas;
                     $reportes[$key]->horasaprobadasAsigna = $value->aprobadas;
@@ -101,32 +102,33 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
             }
 
             if($iduserBorrado === []){
-                    if(Auth::User()->is_admin) {
-                        log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name. ' esta exportando '.count($reportes).' reportes');
-                    }else{
-                        Log::info(' U:'.Auth::user()->name. ' en la clase ' . $nombreC . ' esta exportando '.count($reportes).' reportes');
-                    }
-                
+                $mensajeFinal = 'Sin usuarios borrados';
             }else{ // usuario borrado
                 $userBorrado = User::withTrashed()->WhereIn('id',$iduserBorrado)->pluck('name');
                 $usuariosBorrados = '';
                 foreach ($userBorrado as $key => $value) {
                     $usuariosBorrados .= $value. ' ';
                 }
-                session()->flash('message', ' Algunos asesores involucrados han sido borrados: '.$usuariosBorrados);
-                Log::alert(' U:'.Auth::user()->name. ' fallo en el descargable de:' .$nombreC. ' Exportacion incorrecta. Uno o mas de los usuarios involucrados han sido borrados= '.$usuariosBorrados);
+                $mensajeFinal = ' Algunos asesores involucrados han sido borrados: '.$usuariosBorrados;
+                session()->flash('message', $mensajeFinal);
             }
-            // dd($reportes);
+            Myhelp::EscribirEnLog($this,$mensajeFinal);
             return view('exports.excelReporte', [
                 'reportes' => $reportes,
                 'total0' => $totalHoras,
                 'fecha' =>  $this->arreglarFechas($this->ini,$this->fin),
             ]);
+
         } catch (\Throwable $th) {
             session()->flash('message', ' Exportacion incorrecta. '.$th->getMessage());
-            Log::critical(' U:'.Auth::user()->name. ' fallo en el descargable ' .$nombreC. ' Detalles del error: '.$th->getMessage().' _____ Error Completo => '.$th);
-            return null;
+            $mensajeFinal =
+            Myhelp::EscribirEnLog($this,$mensajeFinal);
+            return view('exports.excelReporte', [
+                'reportes' => $reportes,
+                'total0' => $totalHoras,
+                'fecha' =>  $this->arreglarFechas($this->ini,$this->fin),
+            ]);
         }
-      
+
     }
 }

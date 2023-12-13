@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\helpers\Myhelp;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
@@ -14,17 +15,11 @@ class ElWelcome extends Component
     public $numeroEntradas = 4; //ojala un numero par
     public $contenido; //solo para admin
     public $contenidoAdmin,$contenidoAlejo;
-    
+
 
     public function mount(){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
+        Myhelp::EscribirEnLog($this);
 
-        if(Auth::User()->is_admin) {
-            log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name);
-        }else{
-            log::info('Vista:  ' . $nombreC. ' U:'.Auth::user()->name );
-        }
-        
         $this->contenido = [
             // ['titulo' => 'Revisar ordenes', 'link' => ''],
             // ['titulo' => 'Revisar ordenes rechazadas', 'link' => ''],
@@ -40,7 +35,7 @@ class ElWelcome extends Component
             ['titulo' => 'archivos', 'link' => 'NuevasFunciones'],
             ['titulo' => 'asignar usuario', 'link' => 'cambiarAsignacion'],
         ];
-        
+
     }
 
     public function render()

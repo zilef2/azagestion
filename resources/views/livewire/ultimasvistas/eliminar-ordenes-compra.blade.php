@@ -17,19 +17,19 @@
                     </div>
                 @endif
 
-
-
                 <p class="lg:w-2/3 mx-auto leading-relaxed text-base">
                     Esta tabla muestra los reportes que se han realizado hoy.
                 </p>
+                <p class="lg:w-2/3 mx-auto leading-relaxed text-base">
+                    Presione enter para buscar
+                </p>
                 <div class="mx-auto my-1 relative flex flex-wrap justify-center items-center">
                     <svg class="w-6 h-6 mr-2 mt-2 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /> </svg>
-                    <input type="text" wire:model.defer="searchTerm" wire:keydown.enter="actualizarReportes" placeholder="Buscar por horas o justificacion..."
+                    <input type="text" wire:model.defer="searchTerm" wire:keydown.enter="actualizarReportes" placeholder="Buscar por código..."
                         class="w-full bg-cyan-100 hover:bg-cyan-200 focus:shadow-soft-primary-outline text-sm leading-5.6 ease-soft block
                                 appearance-none rounded-lg border border-solid border-gray-300 bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none ">
                 </div>
             </div>
-
 
             <div class=" w-full mx-auto overflow-auto" >
                 <table class="table-auto w-full text-left whitespace-no-wrap overflow-x-auto">
@@ -57,7 +57,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($reporteshoy as $key => $value)
-                            <tr wire:loading.class="opacity-50 bg-200">
+                            <tr >
                                 <td class="px-6 md:px-2 sm:px-1 py-4 whitespace-nowrap">
                                     <div class="mt-4 flex px-1 content-center justify-center">
                                         <button wire:click="eliminarUser({{ $value['id'] }})"
@@ -104,8 +104,6 @@
                 </p>
             </div>
 
-
-
             <div class=" w-full mx-auto overflow-auto" >
                 <table class="table-auto w-full text-left whitespace-no-wrap overflow-x-auto">
                     <thead class="bg-gray-50">
@@ -130,9 +128,10 @@
                             <th scope="col" class="px-6 md:px-2 sm:px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"> Horas aprobadas </th>
                         </tr>
                     </thead>
+
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse($reportes as $key => $value)
-                            <tr wire:loading.class="opacity-50 bg-200">
+                            <tr >
                                 <td class="px-6 md:px-2 sm:px-1 py-4 whitespace-nowrap">
                                     <div class="mt-4 flex px-1 content-center justify-center">
                                         <button wire:click="eliminarUser({{ $value['id'] }})"
@@ -154,7 +153,6 @@
                                 <td class="px-6 md:px-2 sm:px-1 py-4 whitespace-nowrap"> <div class="flex items-center"> <div class="ml-4"> <div class="text-sm font-medium text-gray-900"> {{ $value['muni']['nombre'] }} </div> </div> </div> </td>
                                 <td class="px-6 md:px-2 sm:px-1 py-4 whitespace-nowrap"> <div class="flex items-center"> <div class="ml-4"> <div class="text-sm font-medium text-gray-900"> {{ $value['novedad'] }} </div> </div> </div> </td>
                                 <td class="px-6 md:px-2 sm:px-1 py-4 whitespace-nowrap"> <div class="flex items-center"> <div class="ml-4"> <div class="text-sm font-medium text-gray-900"> {{ $value['aprobadas'] }} </div> </div> </div> </td>
-                                
                             </tr>
                         @empty
                             <tr>

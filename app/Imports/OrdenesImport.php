@@ -11,6 +11,7 @@ use App\Models\Reporte;
 use App\Models\Tarea;
 use App\Models\User;
 use DateTime;
+use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\ToModel;
 
 //validacion
@@ -19,39 +20,28 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Row;
 
 
-class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalculatedFormulas
 //,SkipsEmptyRows,WithValidation, WithHeadingRow,  SkipsOnError, SkipsOnFailure
-{
+class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
      use Importable;
-    // ,SkipsErrors, SkipsFailures
-
-    public function chunkSize(): int { return 500; }
-    public function batchSize(): int { return 500; }
     /*
-    posiciones: [
-        A - 0 numero de orden
-        B - 1 fecha de aprobacion
-        G - 6 empresa
-        H - 7 tarea
-        J - 9 clasificacion
-        L - 11 prestador
-        M - 12 cantidad pedida            /N - 13 CANTIDAD SIN PROGRAMAR
-        U - 20 estado de la tarea
-    ]
+        posiciones: [
+            A - 0 numero de orden
+            B - 1 fecha de aprobacion
+            G - 6 empresa
+            H - 7 tarea
+            J - 9 clasificacion
+            L - 11 prestador
+            M - 12 cantidad pedida            /N - 13 CANTIDAD SIN PROGRAMAR
+            U - 20 estado de la tarea
+        ]
     */
-    public function customValidationMessages() {
-        return [
-            '0' => 'El numero de la orden es obligatorio.',
-            '1' => 'La fecha de aprobacion es obligatoria.',
-            // '20' => 'El estado de la tarea es obligatorio.',
-        ];
-    }
 
-    public function model(array $row) {
+    public function onRow(Row $row) {
         $countfilas = session('CountFilas',0); session(['CountFilas' => $countfilas+1]);
-        if (!isset($row[0]) || !isset($row[20]) || $row[0] == "ORDEN" || trim($row[0]) == "ORDEN" || $row[1] == "1" ) {
+        if (!isset($row[0]) || !isset($row[20]) || $row[0] === "ORDEN" || trim($row[0]) === "ORDEN" || $row[1] == "1" ) {
             return null;
         }
 
@@ -79,7 +69,6 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                     if ($fechaAprobacion === false) {
                         throw new \Exception('Fecha inválida ');
                         // throw new \Exception('Fecha inválida '.$lafecha. ' --++--');
-                        return null;
                     }
                 }
             }
@@ -89,7 +78,6 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                 $fechaAprobacion = DateTime::createFromFormat('d/m/Y', $lafecha);
                 if ($fechaAprobacion === false) {
                     throw new \Exception('Fecha inválida '.$lafecha);
-                    return null;
                 }
             }
         }
@@ -103,7 +91,6 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                     'estado_tarea' => 1, //0 cuando aun no ha sido ejecutada | 1 cuando en el archivo de excel aparece ejecutada
                 ]);
             }
-            return null;
         }
 
         /*
@@ -128,7 +115,6 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
                 $empresaid = $empresa->id;
             }else{
                 $empresaid = $empresaPorNombre->first()->id;
-                // $empresa = $empresaPorNombre->first(); //ttodo: corregir historico
             }
 
             $tareaPorNombre = Tarea::Where('nombre','LIKE','%'.$row[7].'%')->get();
@@ -227,17 +213,16 @@ class OrdenesImport implements ToModel, WithChunkReading, ShouldQueue, WithCalcu
             // }
         }
 
-        Historicoc::Create([
-            'codigo' => $row[0],
-            'fecha_aprobacion' => $fechaAprobacion,
-            'horas_aprobadas' => $row[12],
-            'estado_tarea' => $row[20],
-            'prestador' => $row[11],
-
-            'empresa' => $row[6],
-            'tarea' => $row[7],
-            'clasificacion' => $row[9],
-        ]);
-        return $usuario;
+//        Historicoc::Create([
+//            'codigo' => $row[0],
+//            'fecha_aprobacion' => $fechaAprobacion,
+//            'horas_aprobadas' => $row[12],
+//            'estado_tarea' => $row[20],
+//            'prestador' => $row[11],
+//
+//            'empresa' => $row[6],
+//            'tarea' => $row[7],
+//            'clasificacion' => $row[9],
+//        ]);
     }
 }

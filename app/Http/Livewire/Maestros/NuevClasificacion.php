@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Maestros;
 
+use App\helpers\Myhelp;
 use Livewire\Component;
 use App\Models\Clasificacion;
 use Illuminate\Support\Facades\Auth;
@@ -26,11 +27,7 @@ class NuevClasificacion extends Component
     public function mount(){
         $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
 
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->debug('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            log::debug('Vista:  ' . $nombreC. ' U:'.Auth::user()->name );
-        }
+        Myhelp::EscribirEnLog($this);
         $this->losAtributos = ( (new Clasificacion)->getFillable() );
         $this->todas = Clasificacion::where('id','>',0)->get();
     }

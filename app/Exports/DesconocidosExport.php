@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\helpers\Myhelp;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -23,20 +24,16 @@ class DesconocidosExport implements FromCollection , WithHeadings,ShouldAutoSize
     * @return \Illuminate\Support\Collection
     */
     public function collection() {
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-
         try {
             $desconocidos = User::select('name','email','cedula','cedula2')->where('rol_id',3)
                 ->where(function($query){
                     $query->where('email','like','%UsuarioDesconocido%');
                 })->get();
-            // dd($desconocidos);
-            Log::info(' U-> '.Auth::user()->name. ' en la funcion ' .$nombreC. ' se descargaron '. count($desconocidos).' usuarios desconocidos.' );
+            Myhelp::EscribirEnLog($this,' se descargaron '. count($desconocidos).' usuarios desconocidos.');
             return $desconocidos;
-            
+
         } catch (\Throwable $th) {
-            Log::critical(' U-> '.Auth::user()->name. ' en la funcion ' .$nombreC. ' produjo el siguiente error: '. $th );
+            Myhelp::EscribirEnLog($this,'', true,$th);
             return null;
         }
     }

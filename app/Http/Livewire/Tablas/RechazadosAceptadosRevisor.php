@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Tablas;
 
 use App\Models\Reporte;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -30,8 +30,7 @@ class RechazadosAceptadosRevisor extends Component
     }
     
 
-    public function render()
-    {
+    public function render() {
         return view('livewire.tablas.rechazados-aceptados-revisor');
     }
 }

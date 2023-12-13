@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Practice;
 
 
+use App\helpers\Myhelp;
 use App\Models\OrdenCompra;
 use App\Models\OrdenCompra_User;
 use App\Exports\EmpresasExport;
@@ -36,9 +37,8 @@ class NuevasFunciones extends Component
         public $ordenesSinasignar,$ordenesSeleccionadas,$userSelected;
 
     public function mount(){
-    log::debug('Vista:  ' . get_class($this). '  Usuario -> '.Auth::user()->name );
+        Myhelp::EscribirEnLog($this);
         //asignarordenes
-
         $ordenesSinDueno = OrdenCompra_User::all()->pluck('orden_compra_id');
         $this->ordenesSinasignar = OrdenCompra::whereNotIn('id',$ordenesSinDueno)->get();
     }

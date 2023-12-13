@@ -45,13 +45,8 @@ class ActionRechazadosAceptadosRevisor extends Component {
     public $pendiente = 0;
 
     public function mount($id){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this))); $nombreC = end($ListaControladoresYnombreClase);
-        if(Auth::User()->is_admin > 0) {
-            Log::channel('eladmin')->info('Vista:' . $nombreC. '|  U:'.Auth::user()->name.'');
-        }else{
-            log::info('Vista:  ' . $nombreC. '  Usuario -> '.Auth::user()->name );
-        }
-        
+        Myhelp::EscribirEnLog($this);
+
         $this->reporte = Reporte::find($id);
         $ordenId = $this->reporte->orden_compra_id;
         $this->ordenRevisar = OrdenCompra::find($ordenId);
@@ -60,8 +55,8 @@ class ActionRechazadosAceptadosRevisor extends Component {
         $this->Array_usuario_AND_Mail = [$Array_usuario_AND_Mail->name, $Array_usuario_AND_Mail->email];
         $this->correoDelUsuario = $Array_usuario_AND_Mail->email;
         if($this->reporte->aprobado == 1 || $this->reporte->aprobado == 2){ //la orden tiene que ser diligenciada
-                /* aprobado = 0 no se ha diligenciado 
-                    aprobado = 1 se dilingencio 
+                /* aprobado = 0 no se ha diligenciado
+                    aprobado = 1 se dilingencio
                     aprobado = 2 se aprobo por el revisor
                     aprobado = 3 rechazo por el revisor
                     aprobado = 4 aprobado por completo
@@ -75,7 +70,7 @@ class ActionRechazadosAceptadosRevisor extends Component {
             $this->tareaid = $this->ordenRevisar->tarea_id;
             $this->empresasid = $this->ordenRevisar->empresa_id;
             $this->clasificacionid = $this->ordenRevisar->clasificacion_id;
-            
+
             $this->fechaOrden =  $this->ordenRevisar->fecha;
 
             //reporte
@@ -85,7 +80,7 @@ class ActionRechazadosAceptadosRevisor extends Component {
                 $this->HayObservaciones = false;
             }
             $this->observaciones = $this->reporte->observaciones;
-            
+
             $this->siOno =  $this->reporte->{"requiere_transporte"};
             $this->horas = $this->reporte->horas;
             $this->bancohoras = $this->reporte->bancohoras;
@@ -122,16 +117,16 @@ class ActionRechazadosAceptadosRevisor extends Component {
         $this->validate([ 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);//2MB
         try{
             $destino = $this->Array_usuario_AND_Mail[1];
-            Log::info('Se intenta enviar correo. Destinatario: '.$destino. '. la clase: ' . $nombreC . '  _  Usuario logueado -> '.Auth::user()->name);
+            Myhelp::EscribirEnLog($this);
             $esdeTest = substr($destino, -9) === "@test.com";
             if($esdeTest){
                 session()->flash('messageError', 'No fue posible realizar la operación. '.$destino.' no es una dirección de correo valida');
-                Log::alert('En la vista ' . $nombreC . ' se intento enviar un correo electronico a '.$destino.' U:'.Auth::user()->name);
+                Myhelp::EscribirEnLog($this, ' se intento enviar un correo electronico a '.$destino);
             }else{
                 $domain = substr(strrchr($destino, "@"), 1);
                 if (strpos($domain, '.') === false || substr($domain, -1) === '.') {
                     session()->flash('messageError', 'No fue posible realizar la operación. '.$destino.' no es una dirección de correo valida');
-                    Log::alert('se intento enviar un correo electronico a que temrina en punto o no tiene un dominio valido '.$destino.' U:'.Auth::user()->name);
+                    Myhelp::EscribirEnLog($this, 'se intento enviar un correo electronico a que temrina en punto o no tiene un dominio valido '.$destino);
                 }else{
 
                     if($this->photo){
@@ -153,22 +148,22 @@ class ActionRechazadosAceptadosRevisor extends Component {
                         "Orden #".$this->ordenRevisar->codigo." ha sido rechazada",
                         "Señor(a) ".$this->Array_usuario_AND_Mail[0].", la orden #".$this->ordenRevisar->codigo." ha sido rechazada",
                     ));
-                    Log::info('Correo enviado exitosamente ' . $nombreC . '  _  Usuario -> '.Auth::user()->name);
+
+                    Myhelp::EscribirEnLog($this);
                     session()->flash('message', 'Correo enviado a la dirección '.$destino);
                     (new Myhelp)->redirect('/RechazadosAceptadosRevisor');
                 }
             }
         } catch (\Throwable $th) {
-            Log::critical('En la vista ' . $nombreC . ' hay un error. Usuario -> '.Auth::user()->name.' descripcion error:_:  '.$th->getMessage());
+            Myhelp::EscribirEnLog($this,'',1,$th);
             session()->flash('messageError', 'No fue posible realizar la operación');
-            // session()->flash('message', substr($th,6,180));
         }
     }
 
     public function novedadOrden(){
         $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
         $nombreC = end($ListaControladoresYnombreClase);
-        
+
         Validator::make(
             [
                 'novedad' => $this->novedad,
@@ -183,14 +178,12 @@ class ActionRechazadosAceptadosRevisor extends Component {
         try{
             $envioDePrueba = false;
             $destino = $this->Array_usuario_AND_Mail[1];
-            Log::info('U -> '.Auth::user()->name.' Se intento enviar correo. Destinatario: '.$destino. '. la clase: ' . $nombreC);
-            
+            Myhelp::EscribirEnLog($this,' Se intento enviar correo. Destinatario: '.$destino);
             $esdeTest = substr($destino, -9) === "@test.com";
             if($esdeTest){
                 // session()->flash('messageError', 'No fue posible realizar la operación. '.$destino.' no es una dirección de correo valida');
                 // Log::alert('U -> '.Auth::user()->name.' vista ' . $nombreC . ' function novedadOrden: se intento enviar un correo electronico a '.$destino);
                 $envioDePrueba = true;
-
             }
             // else{
                 $domain = substr(strrchr($destino, "@"), 1);
@@ -212,7 +205,7 @@ class ActionRechazadosAceptadosRevisor extends Component {
                             "Señor(a) ".$this->Array_usuario_AND_Mail[0].", la orden #".$this->ordenRevisar->codigo." tiene una novedad. ".
                             $this->novedad
                         ));
-                        Log::info('Correo (Novedad) enviado exitosamente ' . $nombreC . '  _U:'.Auth::user()->name);
+                        Myhelp::EscribirEnLog($this);
                         session()->flash('message', 'Novedad enviada a '.$destino);
                     }else{
                         session()->flash('message', 'Novedad no se envio a '.$destino. ' ya que es un correo inexistente');
@@ -222,7 +215,7 @@ class ActionRechazadosAceptadosRevisor extends Component {
                 // }
             // }
         } catch (\Throwable $th) {
-            Log::critical('En la vista ' . $nombreC . ' hay un error.U:'.Auth::user()->name.' descripcion error:_:  '.$th->getMessage());
+            Myhelp::EscribirEnLog($this,'',1,$th);
             session()->flash('messageError', 'No fue posible realizar la operación');
         }
     }
