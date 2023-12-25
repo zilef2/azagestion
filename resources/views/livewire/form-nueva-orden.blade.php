@@ -25,30 +25,14 @@
                     <form wire:submit.prevent="submitformnueva" method="POST">
                         @csrf
                         <div class="flex flex-wrap -m-2">
-
                             @if($elUsuario->is_admin && !$ordenSeleccionadaid)
-                                <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3">
-                                    <div class="relative">
-                                        <label for="userSeleccionadoid" class="block text-sm font-medium text-gray-700">
-                                            Usuario que ejecuta la actividad  ({{ count($UsuariosAsesores) }})
-                                        </label>
-                                        <select wire:model="userSeleccionadoid"  wire:change="updateUs"
-                                        aria-label="form-select-lg example"
-                                            class="form-select form-select-md mt-2 appe arance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                            >
-                                            @forelse($UsuariosAsesores as $generico)
-                                                <option wire:key="useri-{{ $generico->id }}" value="{{ $generico->id }}"
-                                                    class="capitalize"> {{ $generico->name }}
-                                                </option>
-                                            @empty
-                                                <option class="capitalize" value="" selected>No hay usuarios</option>
-                                            @endforelse
-                                        </select>
-                                    </div>
-                                </div>
+
                                 {{-- busca usuarios --}}
                                 <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 mt-1">
-                                    <div class="mt-6 relative flex h-12 w-full flex-row-reverse overflow-clip rounded-lg">
+                                    <label for="userSeleccionadoid" class="block text-sm font-medium text-gray-700 mt-0">
+                                        Buscar asesor por nombre
+                                    </label>
+                                    <div class="mt-1 relative flex h-12 w-full flex-row-reverse overflow-clip rounded-lg">
                                         <input wire:model.defer="UserBuscada"
                                             type="text" id="UserBuscad" placeholder="Digite el nombre"
                                             class="peer w-full rounded-r-lg border border-slate-400 p-2 text-slate-900 placeholder-slate-400 transition-colors duration-300 focus:border-sky-400 focus:outline-none" />
@@ -60,13 +44,49 @@
                                         </label>
                                     </div>
                                 </div>
+
+                                <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2">
+                                    <div class="relative">
+                                        <label for="userSeleccionadoid" class="block text-sm font-medium text-gray-700">
+                                            Asesor que ejecuta la actividad  ({{ count($UsuariosAsesores) }})
+                                        </label>
+                                        <select wire:model="userSeleccionadoid"  wire:change="updateUs"
+                                                aria-label="form-select-lg example"
+                                                class="form-select form-select-md mt-2 appe arance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        >
+                                            @forelse($UsuariosAsesores as $generico)
+                                                <option wire:key="useri-{{ $generico->id }}" value="{{ $generico->id }}"
+                                                        class="capitalize"> {{ $generico->name }}
+                                                </option>
+                                            @empty
+                                                <option class="capitalize" value="" selected>No hay usuarios</option>
+                                            @endforelse
+                                        </select>
+                                    </div>
+                                </div>
                             @endif
 
 
+                            {{-- buscador de ordenes --}}
+                            <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 mt-1">
+                                <p class="mx-1">Escriba la OC/OS y luego click en la lupa</p>
+                                <p class="mx-auto leading-relaxed text-base">La primera OC será la última que se modificó</p>
+                                <div class="mt-6 relative flex h-10 w-full flex-row-reverse overflow-clip rounded-lg">
+                                    <input wire:model.defer="ordenBuscada" {{ $ordenSeleccionadaid ? 'disabled' : '' }} wire:keydown.enter="OrdenBuscadaFunc"
+                                           onkeydown="return onlyNumbers(event)"
+                                           type="text" id="ordenBusca" placeholder="Digite los numeros de la OC/OS"
+                                           class="peer w-full rounded-r-lg border border-slate-400 p-2 text-slate-900 placeholder-slate-400 transition-colors duration-300 focus:border-sky-400 focus:outline-none" />
+                                    <label for="ordenBusca" wire:click.debounce.700ms="OrdenBuscadaFunc"  wire:loading.attr="disabled" wire:target="OrdenBuscadaFunc"
+                                           class="disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center rounded-l-lg border border-slate-400 bg-slate-50 px-2 text-sm text-slate-400 transition-colors duration-300 peer-focus:border-sky-400 peer-focus:bg-sky-400 peer-focus:text-white">
+                                        <svg wire:loading.remove wire:target="OrdenBuscadaFunc" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 deni"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /> </svg>
+                                    </label>
+                                </div>
+                            </div>
+                            {{-- Selec OC/OS--}}
                             <div class="p-2 mt-6 w-full xs:w-full sm:w-full">
                                 <div class="relative">
                                     <label for="ordenSeleccionadaid" class="block text-sm font-medium text-gray-700 capitalize">
-                                        OC/OS ({{ count($codigosPendientes) }})
+                                        OC/OS ({{ count($codigosPendientes) }} resultados)
                                     </label>
                                     <select wire:model="ordenSeleccionadaid" aria-label="form-select-lg example"
                                         class="form-select form-select-md mt-2 appe arance-none block w-full px-4 py-2 text-lg font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
@@ -87,20 +107,7 @@
                                     </select>
                                 </div>
                             </div>
-                            {{-- buscador de ordenes --}}
-                            <div class="p-2 w-full xs:w-full sm:w-full md:w-1/2 mt-1">
-                                <p class="mx-1">Escriba la OC/OS y luego click en la lupa</p>
-                                <div class="mt-6 relative flex h-10 w-full flex-row-reverse overflow-clip rounded-lg">
-                                    <input wire:model.defer="ordenBuscada" {{ $ordenSeleccionadaid ? 'disabled' : '' }} wire:keydown.enter="OrdenBuscadaFunc"
-                                        onkeydown="return onlyNumbers(event)"
-                                        type="text" id="ordenBusca" placeholder="Digite los numeros de la OC/OS"
-                                        class="peer w-full rounded-r-lg border border-slate-400 p-2 text-slate-900 placeholder-slate-400 transition-colors duration-300 focus:border-sky-400 focus:outline-none" />
-                                    <label for="ordenBusca" wire:click.debounce.700ms="OrdenBuscadaFunc"  wire:loading.attr="disabled" wire:target="OrdenBuscadaFunc"
-                                        class="disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center rounded-l-lg border border-slate-400 bg-slate-50 px-2 text-sm text-slate-400 transition-colors duration-300 peer-focus:border-sky-400 peer-focus:bg-sky-400 peer-focus:text-white">
-                                        <svg wire:loading.remove wire:target="OrdenBuscadaFunc" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 deni"> <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /> </svg>
-                                    </label>
-                                </div>
-                            </div>
+
 
 
                             {{-- la parte de abajo se trae cuando se selecciona una orden --}}
@@ -132,7 +139,7 @@
                                 <div class="p-2 w-full xs:w-1/2 xs:w-full sm:w-full md:w-1/2">
                                     <div class="relative">
                                         <label for="clasificacionid"
-                                            class="block text-sm font-medium text-gray-700 capitalize">clasificacion</label>
+                                            class="mt-6 block text-sm font-medium text-gray-700 capitalize">clasificación</label>
                                         <select disabled
                                             class="form-select form-select-md mt-2
                                                 appearance-none block w-full px-4 py-2
@@ -179,7 +186,7 @@
                                                     />
                                                 <label for="fechaOrden"
                                                     class="flex items-center rounded-l-lg border border-slate-400 bg-slate-50 px-2 text-sm text-slate-400 transition-colors duration-300 peer-focus:border-sky-400 peer-focus:bg-sky-400 peer-focus:text-white">
-                                                    Fecha aprobacion
+                                                    Fecha aprobación
                                                 </label>
                                             </div>
                                         </div>
@@ -200,7 +207,7 @@
                                                     />
                                                 <label for="fecha_ejecucion"
                                                     class="flex items-center rounded-l-lg border border-slate-400 bg-slate-50 px-2 text-sm text-slate-400 transition-colors duration-300 peer-focus:border-sky-400 peer-focus:bg-sky-400 peer-focus:text-white">
-                                                    Fecha ejecucion
+                                                    Fecha ejecución
                                                 </label>
                                             </div>
                                         </div>

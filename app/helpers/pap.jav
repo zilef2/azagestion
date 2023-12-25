@@ -15,13 +15,13 @@
 
     //mark: Empezar proyecto --
 
-        
+
     // heramientas
         composer require laraveles/spanish
         php artisan laraveles:install-lang
         composer require psr/simple-cache:^1.0 maatwebsite/excel
         composer require mediconesystems/livewire-datatables
-        //probando herramientas 
+        //probando herramientas
             composer require opcodesio/log-viewer
         // npm install @tailwindcss/forms
 
@@ -102,12 +102,12 @@
         php artisan make:livewire formularioSuper.CambioRoles
         //asignador (casi admin )
 
-        php artisan make:livewire vistas.WelcomeAsignador 
+        php artisan make:livewire vistas.WelcomeAsignador
             php artisan make:livewire vistas.SubirOrdenesDeCompra
             php artisan make:livewire vistas.SubirUsuarios
             php artisan make:livewire vistas.TodasLasOrdenes
             php artisan make:livewire tabla.UsuariosAsignadores
-        
+
         php artisan make:livewire ultimasvistas.PendientesAprobadas
         php artisan make:livewire ultimasvistas.CompletamenteAprobadas
         php artisan make:livewire ultimasvistas.VerAdjunto
@@ -150,11 +150,13 @@
     php artisan make:export DesconocidosExport --model=User
     php artisan make:export BDExport
     //#-- excel import
-    php artisan make:import OrdenesImport --model=User //usado para importar todo menos los usuarios
-    php artisan make:import RegistrarUsuariosImport --model=User
+    php artisan make:0import OrdenesImport --model=User //usado para importar todo menos los usuarios
+    php artisan make:0import RegistrarUsuariosImport --model=User
 
 
 
+    // internal
+    php artisan make:livewire internal.ActualizacionDBDiciembre
 
 
 

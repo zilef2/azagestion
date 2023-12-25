@@ -44,16 +44,20 @@ class Myhelp{
         }else{
             if($critico == 1 && $mensajeth !== ''){
                 $mesanjeFinal = $mensajeth->getMessage(). ' | '.$mensajeth->getFile(). ' | '.$mensajeth->getLine();
-                Log::critical('Vista: ' . $nombreC . 'U:' . $thisuser->name . ' | Clase: '.$nombreP. '|| ' . ' MensajeCritico: ' . $mesanjeFinal);
+                Log::critical('Vista: ' . $nombreC . ' U:' . $thisuser->name . ' | Clase: '.$nombreP. '|| ' . ' MensajeCritico1: ' . $mesanjeFinal);
             }else{
-                if($thisuser->is_admin > 0) {
-                    Log::channel('eladmin')->alert('Vista:' . $nombreC. '| Clase: '.$nombreP. '|  U:'.Auth::user()->name.'');
+                if($critico == 1){
+                    Log::critical('Vista: ' . $nombreC . ' U:' . $thisuser->name . ' | Clase: '.$nombreP. '|| ' . ' MensajeCritico2: ' . $mensaje);
                 }else{
-                    if($thisuser->rol_id === 3) {
-                        Log::channel('asesores')->alert('Vista:  ' . $nombreC. '| Clase: '.$nombreP. '  Usuario -> '.Auth::user()->name );
-                    }
-                    if($thisuser->rol_id === 2) {
-                        Log::channel('asignadores')->alert('Vista:  ' . $nombreC. '| Clase: '.$nombreP. '  Usuario -> '.Auth::user()->name );
+                    if($thisuser->is_admin > 0) {
+                        Log::channel('eladmin')->alert('Vista:' . $nombreC. '| Clase: '.$nombreP. '|  U:'.Auth::user()->name.' | ' .$mensaje );
+                    }else{
+                        if($thisuser->rol_id === 3) {
+                            Log::channel('asesores')->alert('Vista:  ' . $nombreC. '| Clase: '.$nombreP. '  Usuario -> '.Auth::user()->name.' | ' .$mensaje );
+                        }
+                        if($thisuser->rol_id === 2) {
+                            Log::channel('asignadores')->alert('Vista:  ' . $nombreC. '| Clase: '.$nombreP. '  Usuario -> '.Auth::user()->name.' | ' .$mensaje );
+                        }
                     }
                 }
             }

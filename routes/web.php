@@ -3,6 +3,7 @@
 use App\Exports\BDExport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\excelupload;
 
 // Route::get('/', function () { return view('welcome'); });
 Route::get('/', function () { return redirect('/login'); });
@@ -51,14 +52,8 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         Route::get('ActionRechazadosAsesor/{id}', '\App\Http\Livewire\TablaActions\ActionRechazadosAsesor')->name('ActionRechazadosAsesor');
 
 
-        //exportPDF (version original, y de pruebas)
+    //exportPDF (version original, y de pruebas)
         Route::get('RangoOrdenesCompra', '\App\Http\Livewire\ExportPdf\RangoOrdenesCompra')->name('RangoOrdenesCompra')->middleware(['auth', 'revisor']);
-
-        // Route::get('RangoOrdenesCompra', function(){
-        //     $fecha1 = Carbon::createFromTimestamp(strtotime('04/01/2023')); $fecha2 = Carbon::createFromTimestamp(strtotime('04/30/2023')); $unafecha =  'abril';
-        //     $repor = Reporte::WhereBetween('fecha_reporte',[$fecha1,$fecha2]);
-        //     return view('exports.excelReporte',[ 'reportes' => $reportes, 'total0' => $totalHoras, 'fecha' => $unafecha ]);
-        // });
 
         Route::get('RangoOrdenesSoporte', '\App\Http\Livewire\ExportPdf\RangoOrdenesSoporte')->name('RangoOrdenesSoporte')->middleware(['auth', 'revisor']);
         Route::get('PendientesAprobadas', '\App\Http\Livewire\Ultimasvistas\PendientesAprobadas')->name('PendientesAprobadas')->middleware(['auth', 'revisor']);
@@ -66,13 +61,21 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
         Route::get('Logviez', '\App\Http\Livewire\Ultimasvistas\Logviez')->name('Logviez')->middleware(['auth', 'revisor']);
         Route::get('eliminarOrdenesCompra', '\App\Http\Livewire\Ultimasvistas\EliminarOrdenesCompra')->name('eliminarOrdenesCompra')->middleware(['auth', 'revisor']);
 
-
     //super
         Route::get('NuevTarea', '\App\Http\Livewire\Maestros\NuevTarea')->name('NuevTarea')->middleware(['auth', 'admin']);
         Route::get('NuevClasificacion', '\App\Http\Livewire\Maestros\NuevClasificacion')->name('NuevClasificacion')->middleware(['auth', 'admin']);
         Route::get('NuevEmpresa', '\App\Http\Livewire\Maestros\NuevEmpresa')->name('NuevEmpresa')->middleware(['auth', 'admin']);
         Route::get('NuevRol', '\App\Http\Livewire\Maestros\NuevRol')->name('NuevRol')->middleware(['auth', 'admin']);
         Route::get('NuevasFunciones', '\App\Http\Livewire\Practice\NuevasFunciones')->name('NuevasFunciones')->middleware(['auth', 'admin']);
+
+
+    //# Actualizacion unica
+        Route::match(['get','post'],'ActualizacionDBDiciembre', '\App\Http\Livewire\Internal\ActualizacionDBDiciembre')->name('ActualizacionDBDiciembre')->middleware(['auth', 'admin']);
+        Route::post('ActualizacionDBDiciembre2', [excelupload::class, 'ActualizacionDBDiciembre2'])
+            ->name('upload.desactualizadas')->middleware(['auth', 'admin']);
+
+
+        //        Route::any('ActualizacionDBDiciembre', '\App\Http\Livewire\Internal\ActualizacionDBDiciembre')->name('ActualizacionDBDiciembre')->middleware(['auth', 'admin']);
 
         Route::get('todaBD', function(){
             return (new BDExport())->download('todaLaBaseDeDatos.xlsx');
@@ -90,8 +93,10 @@ Route::middleware([ 'auth:sanctum', config('jetstream.auth_session'), 'verified'
             return 'Ya existe';
         }
         App('files')->link(
-            storage_path('App/public'), public_path('storage')
-        );return 'Listo';
+            storage_path('App/public'),
+            public_path('storage')
+        );
+        return 'Listo';
     });
 
     Route::get('/clear-c', function () {

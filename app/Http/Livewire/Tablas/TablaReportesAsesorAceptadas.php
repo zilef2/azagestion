@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Tablas;
 
+use App\helpers\Myhelp;
 use App\Models\OrdenCompra;
 use App\Models\OrdenCompra_User;
 use App\Models\Reporte;
@@ -43,8 +44,8 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
             ->where('reportes.user_id', $idUser)
             ->where('reportes.created_at', '>=', Carbon::now()->addMonth(-4));
         /*
-            aprobado = 0 no se ha diligenciado 
-            aprobado = 1 se dilingencio 
+            aprobado = 0 no se ha diligenciado
+            aprobado = 1 se dilingencio
             aprobado = 2 se aprobo por el revisor
             aprobado = 3 rechazo por el revisor
             aprobado = 4 aprobado por completo
@@ -80,7 +81,7 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
             })->label('Borrar');
         }
         // if (Auth::user()->is_admin>=1) {
-        // $elReturn[]=Column::delete()->label('Eliminar')->hide(); 
+        // $elReturn[]=Column::delete()->label('Eliminar')->hide();
         // }
         return $elReturn;
     }
@@ -104,9 +105,9 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
             ]);
 
             $repor->delete();
-            Log::info(' U:' . Auth::user()->name . ' se elimino el reporte con id ' . $id . ', codigo: ' . $orden->codigo . ' , en la vista ' . $nombreC);
+            Myhelp::EscribirEnLog($this,'se elimino el reporte codigo: ' . $orden->codigo);
         } else {
-            Log::critical(' U:' . Auth::user()->name . ' intento eliminar un reporte que iba a quedar con ' . $nuevasHoras . 'horas disponibles, codigode la orden: ' . $orden->codigo . 'en la vista ' . $nombreC);
+            Myhelp::EscribirEnLog($this,'intento eliminar un reporte que iba a quedar con ' . $nuevasHoras . 'horas disponibles, codigode la orden: ' . $orden->codigo,1);
             session()->flash('messageError', 'Error, las horas no concuerdan');
             return redirect(request()->header('Referer'));
         }
@@ -115,14 +116,11 @@ class TablaReportesAsesorAceptadas extends LivewireDatatable
     public function aceptarReporte($id)
     {
         $reporte = Reporte::find($id);
-        // $IntAceptar = $this->estado == 2 ? 4 : 4; 
+        // $IntAceptar = $this->estado == 2 ? 4 : 4;
         $reporte->update([
             'aprobado' => 4
         ]);
-
-        $ListaControladoresYnombreClase = (explode('\\', get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-        Log::Critical(' U:' . Auth::user()->name . ' se acepto un reporte desde la vista ' . $nombreC);
+        Myhelp::EscribirEnLog($this,'se acepto un reporte');
 
         return redirect(request()->header('Referer'));
     }

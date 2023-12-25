@@ -14,21 +14,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Row;
 
-class RegistrarUsuariosImport implements OnEachRow, WithValidation, WithHeadingRow
+class RegistrarUsuariosImport implements OnEachRow, WithHeadingRow
 {
     use Importable;
     use WithFileUploads;
-
-    public function rules(): array
-    {
-        return [
-            // '1' => [Rule::unique(['users', 'email'])],
-            // '1' => 'email',
-//            'correo' => 'required',
-//            'cedula' => 'required|min:6',
-//            'usuario' => 'min:2'
-        ];
-    }
 
 //    public function chunkSize(): int { return 15000; }
 

@@ -103,7 +103,6 @@ class RangoOrdenesCompra extends Component
         if ($this->validate) {
             try {
                 Myhelp::EscribirEnLog($this);
-
                 return Excel::download(
                     new ReportesExport($this->fechaini, $this->fechafin),
                     'RelacionEntrega - ' . $this->arreglarFechas() . '.xlsx'

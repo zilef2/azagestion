@@ -166,7 +166,7 @@ class ActionRechazadosAsesor extends Component
                         'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                     ]);
                     session()->flash('message', 'Orden y Archivo guardados correctamente.');
-                    Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' diligenció la orden ' . $this->reporte->id . ' y actualizao su adjunto');
+                    Myhelp::EscribirEnLog($this,'diligenció la orden ' . $this->reporte->id . ' y actualizao su adjunto');
 
                     return redirect()->to('dashboard');
                 } else {
@@ -178,7 +178,7 @@ class ActionRechazadosAsesor extends Component
                         'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                     ]);
                     session()->flash('message', 'Orden guardada correctamente.');
-                    Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' diligenció la orden ' . $this->reporte->id . ' y no actualizó adjunto');
+                    Myhelp::EscribirEnLog($this,'diligenció la orden ' . $this->reporte->id . ' y no actualizó adjunto');
 
                     return redirect()->to('dashboard');
                 }
@@ -191,14 +191,12 @@ class ActionRechazadosAsesor extends Component
                     'aprobado' => 1 //0:recien creado | 1: diligenciado | 2:aceptado | 3: rechazado
                 ]);
                 session()->flash('message', 'Orden guardada correctamente.');
-                Log::info('En la vista ' . $nombreC . ' El U: ' . Auth::user()->name . ' actualizo la orden ' . $this->reporte->id . ' que no era capacitacion (SIN adjunto)');
-
+                Myhelp::EscribirEnLog($this,'actualizo la orden ' . $this->reporte->id . ' que no era capacitacion (SIN adjunto)');
                 return redirect()->to('dashboard');
             }
         } catch (\Throwable $th) {
             session()->flash('messageError', 'Orden de compra no guardada, error inesperado');
-
-            Log::critical('Vista:' . $nombreC . ' El U: ' . Auth::user()->name . '.Error: ' . $th->getMessage() . '_____ERROR COMPLETO____' . $th);
+            Myhelp::EscribirEnLog($this,'',1,$th);
         }
     }
 

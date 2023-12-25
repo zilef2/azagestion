@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\helpers\Myhelp;
 use App\Models\Clasificacion;
 use App\Models\Empresa;
 use App\Models\Historicoc;
@@ -12,19 +13,20 @@ use App\Models\Tarea;
 use App\Models\User;
 use DateTime;
 use Maatwebsite\Excel\Concerns\OnEachRow;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
 //validacion
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Row;
 
 
-//,SkipsEmptyRows,WithValidation, WithHeadingRow,  SkipsOnError, SkipsOnFailure
-class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
+
+//,WithValidation, WithHeadingRow,  SkipsOnError, SkipsOnFailure,ShouldQueue
+class OrdenesImport implements OnEachRow, WithCalculatedFormulas,SkipsEmptyRows,WithChunkReading, WithStartRow {
      use Importable;
     /*
         posiciones: [
@@ -38,23 +40,31 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
             U - 20 estado de la tarea
         ]
     */
+    public $thisYear; //to make usuarioDesconocido
+    public $NumberColums;
+
+    public function __construct()
+    {
+        $this->thisYear = (int)date('Y');
+        $this->NumberColums = 0;
+        $this->NumberColumsExecuted = 0;
+        $this->TieneFormulas = false;
+    }
+
+    //<editor-fold desc="GETS">
+    public function getNumberColums():int{return $this->NumberColums;}
+    public function getNumberColumsExecuted():int{return $this->NumberColumsExecuted;}
+    public function getHasFormulas():bool{return $this->TieneFormulas;}
+    //</editor-fold>
+
+    public function startRow(): int{return 2;}
 
     public function onRow(Row $row) {
-        $countfilas = session('CountFilas',0); session(['CountFilas' => $countfilas+1]);
-        if (!isset($row[0]) || !isset($row[20]) || $row[0] === "ORDEN" || trim($row[0]) === "ORDEN" || $row[1] == "1" ) {
-            return null;
-        }
-
-        $rules = [
-            '0' => 'required',
-            '1' => 'required',
-            // '20' => 'required',
-        ];
-
-        $validator = Validator::make($row, $rules); if ($validator->fails()) { throw new \Exception($validator->errors()->first()); }
-
+        $rowIndex = $row->getIndex();
+//        if (!isset($row[0]) || !isset($row[20]) || $row[0] === "ORDEN" || trim($row[0]) === "ORDEN" || $row[1] == "1" ) {
+//            return null;
+//        }
         $lafecha = $row[1];
-
         //the date fix
         if(is_numeric($row[1])){ //toproof
             $unixDate = ($lafecha - 25568) * 86400;
@@ -67,7 +77,7 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
                 if ($fechaAprobacion === false) {
                     $fechaAprobacion = DateTime::createFromFormat('d/m/Y', $lafecha);
                     if ($fechaAprobacion === false) {
-                        throw new \Exception('Fecha inválida ');
+                        throw new \Exception('Fecha inválida. Fila '.$rowIndex);
                         // throw new \Exception('Fecha inválida '.$lafecha. ' --++--');
                     }
                 }
@@ -77,22 +87,29 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
             if ($fechaAprobacion === false) {
                 $fechaAprobacion = DateTime::createFromFormat('d/m/Y', $lafecha);
                 if ($fechaAprobacion === false) {
-                    throw new \Exception('Fecha inválida '.$lafecha);
+                    throw new \Exception('Fecha inválida '.$lafecha. ' La fila '.$rowIndex );
                 }
             }
         }
 
         //busca la orden de compra por codigo
         $OrdenCompraPorCodigo = OrdenCompra::Where('codigo',$row[0])->get();
-        if ( ($row[20] === "EJECUTADA" || $row[20] === "ejecutada" || $row[20] === "Ejecutada") && $row[18] <= 0){
+
+        if(!is_numeric($row[18])){
+            $this->TieneFormulas = true;
+            return null;
+        }
+
+        if (($row[20] === "EJECUTADA" || $row[20] === "ejecutada" || $row[20] === "Ejecutada") && $row[18] <= 0){
             if (($OrdenCompraPorCodigo->count() != 0)) {
                 $orden = $OrdenCompraPorCodigo->first();
                 $orden->update([
                     'estado_tarea' => 1, //0 cuando aun no ha sido ejecutada | 1 cuando en el archivo de excel aparece ejecutada
                 ]);
+                $this->NumberColumsExecuted++;
             }
         }
-
+        $this->NumberColums++;
         /*
             posiciones: [
                 A 0 numero de orden
@@ -101,14 +118,15 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
                 H 7 tarea
                 J 9 clasificacion
                 L 11 prestador
-                M 12 CANTIDAD PEDIDA  -> no se lee (N 13 CANTIDAD SIN PROGRAMAR)
+                M 12 CANTIDAD PEDIDA //excel = horasaprobadas|  -> no se lee (N 13 CANTIDAD SIN PROGRAMAR)
+                S 18 cantida pendiente por facturar (no se guarda en la BD)
                 U 20 estado de la tarea
             ]
         */
 
         //editor-fold "empresa-tarea-clasificacion"
+//            $empresaPorNombre = Empresa::Where('nombre',$row[6])->get();
             $empresaPorNombre = Empresa::Where('nombre','LIKE','%'.$row[6].'%')->get();
-            $empresaid = 0;
 
             if (($empresaPorNombre->count() === 0)) {
                 $empresa = Empresa::Create(['nombre' => $row[6] ]);
@@ -117,8 +135,8 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
                 $empresaid = $empresaPorNombre->first()->id;
             }
 
+//            $tareaPorNombre = Tarea::Where('nombre',$row[7])->get();
             $tareaPorNombre = Tarea::Where('nombre','LIKE','%'.$row[7].'%')->get();
-            $tareaid = 0;
             if (($tareaPorNombre->count() == 0)) {
                 $tarea = Tarea::firstOrCreate(['nombre' => $row[7] ]);
                 $tareaid = $tarea->id;
@@ -126,8 +144,8 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
                 $tareaid = $tareaPorNombre->first()->id;
             }
 
+//            $ClasificacionPorNombre = Clasificacion::Where('nombre',$row[9])->get();
             $ClasificacionPorNombre = Clasificacion::Where('nombre','LIKE','%'.$row[9].'%')->get();
-            $Clasificacionid = 0;
             if (($ClasificacionPorNombre->count() == 0)) {
                 $Clasificacion = Clasificacion::firstOrCreate(['nombre' => $row[9] ]);
                 $Clasificacionid = $Clasificacion->id;
@@ -141,7 +159,7 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
             $orden = OrdenCompra::Create([
                 'codigo' => $row[0],
                 'fecha' => $fechaAprobacion,
-                'horasaprobadas' => $row[12],
+                'horasaprobadas' => $row[12],//excel = cantidad pedida
                 'horasdisponibles' => $row[12],
 
                 'empresa_id' => $empresaid,
@@ -174,9 +192,10 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
 
         // if (count($usuarioPorNombre) == 0 && count($usuarioSLug) == 0) {
         if (count($usuarioSLug) === 0) {
-            $numAleatorio = rand(100100,1001001);
+            $numAleatorio = random_int(100100,1001001);
+
             while (User::where('email', "UsuarioDesconocido".$numAleatorio."@test.com")->exists()) {
-                $numAleatorio = rand(1001002,20010012);
+                $numAleatorio = (random_int(100100,200100) *100) + $this->thisYear;
             }
             $usuario = User::firstOrCreate([
                 'name'      => $row[11],
@@ -199,30 +218,17 @@ class OrdenesImport implements OnEachRow, WithCalculatedFormulas{
             session(['CountNuevosUsuarios' => $nuevosUs+1]);
         }else{
             //toproof: si ya no le quedan horas disponibles en la reasignacion
-            $usuario = null;
-            // if(count($usuarioSLug) == 0){
-            //     OrdenCompra_User::firstOrCreate([
-            //         'orden_compra_id' => $ordenid,
-            //         'user_id' => $usuarioPorNombre->first()->id
-            //     ]);
-            // }else{
-                OrdenCompra_User::firstOrCreate([
-                    'orden_compra_id' => $ordenid,
-                    'user_id' => $usuarioSLug->first()->id
-                ]);
-            // }
+            OrdenCompra_User::firstOrCreate([
+                'orden_compra_id' => $ordenid,
+                'user_id' => $usuarioSLug->first()->id
+            ]);
         }
+    }
 
-//        Historicoc::Create([
-//            'codigo' => $row[0],
-//            'fecha_aprobacion' => $fechaAprobacion,
-//            'horas_aprobadas' => $row[12],
-//            'estado_tarea' => $row[20],
-//            'prestador' => $row[11],
-//
-//            'empresa' => $row[6],
-//            'tarea' => $row[7],
-//            'clasificacion' => $row[9],
-//        ]);
+    public function chunkSize(): int{return 500;}
+
+    public function onError(\Throwable $e)
+    {
+        Myhelp::EscribirEnLog($this,'',1,$e);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Tablas;
 
+use App\helpers\Myhelp;
 use Illuminate\Support\Carbon;
 use App\Models\Reporte;
 use App\Models\OrdenCompra;
@@ -118,8 +119,7 @@ class TablaRechazadosAceptadosRevisor extends LivewireDatatable
                 'aprobado' => 4,
             ]);
         }
-
-        Log::info('Tabla: ' . $nombreC . ' U:' . Auth::user()->name . ' Se aprobó el reporte = ' . $id);
+        Myhelp::EscribirEnLog($this,' Se aprobo el reporte = '.$id. ' con orden_compra_id: '.$reporte->orden_compra_id);
         return redirect(request()->header('Referer'));
     }
 

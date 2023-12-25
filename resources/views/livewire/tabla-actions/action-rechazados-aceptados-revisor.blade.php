@@ -5,7 +5,7 @@
         <section class="text-gray-600 body-font relative pb-40">
             <div class="container px-5 py-1 mx-auto w-full">
                 <div class="flex flex-col text-center w-full mb-2">
-                    <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Correjir orden de compra
+                    <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Corregir orden de compra
                     </h1>
                     <p class="lg:w-2/3 mx-auto leading-relaxed text-sm">
                         Solo es posible modificar el siguiente campo: Justificación o Novedad
@@ -36,7 +36,7 @@
                                     focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                         aria-label="form-select-lg example">
                                         @forelse($codigosPendientes as $generico)
-                                            <option wire:key="codigo-{{ $generico->id }}" value="{{ $generico->id }}" class="capitalize"> 
+                                            <option wire:key="codigo-{{ $generico->id }}" value="{{ $generico->id }}" class="capitalize">
                                                 {{ $generico->codigo }}
                                             </option>
                                         @empty
@@ -64,7 +64,7 @@
                                     </select>
                                 </div>
                             </div>
-                            
+
                             <div class="p-2 w-full xs:w-full sm:w-full md:w-1/3">
                                 <div class="relative">
                                     <label for="clasificacionid" class="block text-sm font-medium text-gray-700 capitalize">clasificacion</label>
@@ -136,7 +136,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div wire.loading.remove class="p-2 w-full xs:w-full sm:w-full md:w-1/4">
                                 <div class="relative">
                                     <div class="mx-auto w-screen-sm mt-6 px-4 py-2">
@@ -239,18 +239,18 @@
                                 <div class="flex justify-between items-center mb-4">
                                     <h2 class="text-lg font-bold text-gray-900">Horas de los reportes</h2>
                                 </div>
-                                
+
                                 <div class="overflow-hidden max-h-0 transition-all duration-500">
                                     @if ($mensajeError2 === '')
                                         <p for="horas" class="flex text-sm font-medium text-gray-100 my-2">
-                                            Acumuladas: <b>{{ $horasAcumuladas }}</b> 
+                                            Acumuladas: <b>{{ $horasAcumuladas }}</b>
                                         </p>
                                         <p for="horas" class="flex text-sm font-medium text-gray-100">
                                             Restantes:  <b>{{ $MaxHoras }}</b>
                                         </p>
                                     @else
                                         <label for="horas" class="flex text-sm font-medium text-red-800">
-                                            {{ $mensajeError2 }}</b> 
+                                            {{ $mensajeError2 }}</b>
                                         </label>
                                     @endif
                                 </div>
@@ -310,7 +310,7 @@
                                 </div>
                             </div>
                         @endif
-                        
+
                         {{-- rechazo --}}
                         @if($pendiente == 2)
                             <div class="">
@@ -356,11 +356,11 @@
                                     Enviar
                                 </button>
                                 <p class="text-center mx-auto text-md">La información se enviará a <b>{{ $correoDelUsuario }}</b></p>
-                                
+
                             </div>
                         @endif
                     </div>
-                    
+
                     <div wire:loading
                         class="text-xl text-green-400 font-bold mx-auto text-center">
                         Por favor, espere...
@@ -395,7 +395,7 @@
                 </div>
             </div>
         </section>
-        
+
     @else
         <h2>{{ $mensajeError }}</h2>
     @endif

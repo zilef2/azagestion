@@ -43,7 +43,7 @@ class EliminarOrdenesCompra extends Component
         try {
             $ordenAsociada = OrdenCompra::find($resultado->orden_compra_id);
             $ordenAsociada->update([
-                'horasdisponibles' => doubleval($ordenAsociada->horasdisponibles) + $resultado->horas
+                'horasdisponibles' => (double)($ordenAsociada->horasdisponibles) + $resultado->horas
             ]);
 
             $resultado->delete();

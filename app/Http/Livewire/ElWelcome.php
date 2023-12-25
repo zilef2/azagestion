@@ -18,7 +18,7 @@ class ElWelcome extends Component
 
 
     public function mount(){
-        Myhelp::EscribirEnLog($this);
+        //        Myhelp::EscribirEnLog($this);
 
         $this->contenido = [
             // ['titulo' => 'Revisar ordenes', 'link' => ''],

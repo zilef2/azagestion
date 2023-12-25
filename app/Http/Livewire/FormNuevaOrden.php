@@ -85,7 +85,7 @@ class FormNuevaOrden extends Component
     }
     public function updateUs()
     {
-        $this->userSeleccionadoid = intval($this->userSeleccionadoid);
+        $this->userSeleccionadoid = (int)($this->userSeleccionadoid);
     }
 
     //functions user asesor
@@ -107,8 +107,8 @@ class FormNuevaOrden extends Component
             $this->horasAcumuladas = $reporte->sum('horas');
             if ($this->horasAcumuladas == 0) $this->horasAcumuladas = '0';
 
-            $this->MaxHoras = floatval($this->ordenSeleccionada->{'horasaprobadas'}) - floatval($this->horasAcumuladas);
-            if (floatval($this->MaxHoras) <= 0) {
+            $this->MaxHoras = (float)($this->ordenSeleccionada->{'horasaprobadas'}) - (float)($this->horasAcumuladas);
+            if ($this->MaxHoras <= 0) {
                 $this->mensajeError = 'Esta orden, ya cumplió con las horas aprobadas';
             }
 
@@ -160,8 +160,6 @@ class FormNuevaOrden extends Component
     }
     public function submitformnueva()
     {
-        $ListaControladoresYnombreClase = (explode('\\', get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
         $this->validate();
         $this->validate([
             'horas' => 'numeric|max:' . $this->MaxHoras,
@@ -268,10 +266,11 @@ class FormNuevaOrden extends Component
         $QueryPendientes->WhereNot('horasdisponibles', 0);
 
         if (!empty($this->filtroPendientes)) {
-            $QueryPendientes->WhereIn('id', $this->filtroPendientes);
+            $QueryPendientes->WhereIn('id', $this->filtroPendientes)->limit(10);
         } else {
-            $QueryPendientes->limit(30);
+            $QueryPendientes->limit(5);
         }
+
         $this->codigosPendientes = $QueryPendientes->orderby('updated_at', 'DESC')->get();
         /*
             aprobado = 0 no se ha diligenciado

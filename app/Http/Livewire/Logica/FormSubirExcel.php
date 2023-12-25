@@ -15,7 +15,6 @@ class FormSubirExcel extends Component
     use WithFileUploads;
 
     public $archivoExcel;
-
     public $archivoExcelSubir;
     public $nombreArchivo;
 

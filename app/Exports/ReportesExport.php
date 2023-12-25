@@ -36,9 +36,9 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
         $fecha2 = strtotime($this->fin);
         if (date('Y', $fecha1) == date('Y', $fecha2)) {
             return 'Desde el ' . date('j M', $fecha1) . ' hasta el ' . date('j M  h:i A', $fecha2);
-        } else {
-            return 'Desde el ' . date('j M Y', $fecha1) . ' hasta el ' . date('j M Y  h:i A', $fecha2);
         }
+
+        return 'Desde el ' . date('j M Y', $fecha1) . ' hasta el ' . date('j M Y  h:i A', $fecha2);
     }
 
     public function styles(Worksheet $sheet) {
@@ -68,10 +68,6 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
     }
 
     public function view(): View {
-
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-
         $reportes = Reporte::WhereBetween('fecha_reporte',[$this->ini,$this->fin])
             ->WhereIn('aprobado',[2,4])->get();
 
@@ -120,8 +116,9 @@ class ReportesExport implements FromView,ShouldAutoSize,WithStyles
             ]);
 
         } catch (\Throwable $th) {
-            session()->flash('message', ' Exportacion incorrecta. '.$th->getMessage());
-            $mensajeFinal =
+            $mensajeFinal = "Archivo:". $th->getFile()." -.- linea:". $th->getLine()." -.- Mensaje:". $th->getMessage();
+
+            session()->flash('message', ' Exportacion incorrecta. '.$mensajeFinal);
             Myhelp::EscribirEnLog($this,$mensajeFinal);
             return view('exports.excelReporte', [
                 'reportes' => $reportes,

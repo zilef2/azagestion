@@ -107,14 +107,12 @@ class ActionRechazadosAceptadosRevisor extends Component {
 
 
     public function RechazarEstaOrden(){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-
         Validator::make(['justificacion' => $this->justificacion],[
             'justificacion' => 'required|min:1|max:254',
         ])->validate();
 
         $this->validate([ 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);//2MB
+        $EstadoRechazo = 0;
         try{
             $destino = $this->Array_usuario_AND_Mail[1];
             Myhelp::EscribirEnLog($this);
@@ -144,26 +142,45 @@ class ActionRechazadosAceptadosRevisor extends Component {
                         ]);
 
                     }
-                    Mail::to($destino)->send(new OrdenesCompraMail(
-                        "Orden #".$this->ordenRevisar->codigo." ha sido rechazada",
-                        "Señor(a) ".$this->Array_usuario_AND_Mail[0].", la orden #".$this->ordenRevisar->codigo." ha sido rechazada",
-                    ));
-
-                    Myhelp::EscribirEnLog($this);
-                    session()->flash('message', 'Correo enviado a la dirección '.$destino);
-                    (new Myhelp)->redirect('/RechazadosAceptadosRevisor');
+                    $EstadoRechazo = 1;
+                    Myhelp::EscribirEnLog($this,' Se rechazó la orden correctamente, falta enviar el correo');
                 }
             }
         } catch (\Throwable $th) {
             Myhelp::EscribirEnLog($this,'',1,$th);
             session()->flash('messageError', 'No fue posible realizar la operación');
         }
+
+        try{
+
+            if (app()->environment() === 'production') {
+                Mail::to($destino)->send(new OrdenesCompraMail(
+                    "Orden #" . $this->ordenRevisar->codigo . " ha sido rechazada",
+                    "Señor(a) " . $this->Array_usuario_AND_Mail[0] . ", la orden #" . $this->ordenRevisar->codigo . " ha sido rechazada",
+                ));
+            }
+
+            if($EstadoRechazo === 1){
+                if (app()->environment() === 'test') {
+                    session()->flash('message', 'Operacion correcta, no se envio correo '.$destino);
+
+    //                Mail::to($destino)->send(new OrdenesCompraMail(
+    //                    "Prueba con la orden #" . $this->ordenRevisar->codigo . " ",
+    //                    "Esto es una prueba, Señor(a) " . $this->Array_usuario_AND_Mail[0] . ", la orden #" . $this->ordenRevisar->codigo . " ",
+    //                ));
+                }else{
+                    session()->flash('message', 'Correo enviado a la dirección '.$destino);
+
+                }
+                (new Myhelp)->redirect('/RechazadosAceptadosRevisor');
+            }
+        } catch (\Throwable $th) {
+            Myhelp::EscribirEnLog($this,'',1,$th);
+            session()->flash('messageError', 'No fue posible enviar el correo');
+        }
     }
 
     public function novedadOrden(){
-        $ListaControladoresYnombreClase = (explode('\\',get_class($this)));
-        $nombreC = end($ListaControladoresYnombreClase);
-
         Validator::make(
             [
                 'novedad' => $this->novedad,
@@ -182,14 +199,12 @@ class ActionRechazadosAceptadosRevisor extends Component {
             $esdeTest = substr($destino, -9) === "@test.com";
             if($esdeTest){
                 // session()->flash('messageError', 'No fue posible realizar la operación. '.$destino.' no es una dirección de correo valida');
-                // Log::alert('U -> '.Auth::user()->name.' vista ' . $nombreC . ' function novedadOrden: se intento enviar un correo electronico a '.$destino);
                 $envioDePrueba = true;
             }
             // else{
                 $domain = substr(strrchr($destino, "@"), 1);
                 if (strpos($domain, '.') === false || substr($domain, -1) === '.') {
                     // session()->flash('messageError', 'No fue posible realizar la operación. '.$destino.' no es una dirección de correo valida');
-                    // Log::alert('se intento enviar un correo electronico a que temrina en punto o no tiene un dominio valido '.$destino.' Usuario -> '.Auth::user()->name);
                     $envioDePrueba = true;
                 }
                 // else{
